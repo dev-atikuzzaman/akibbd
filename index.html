@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Akib Hossain | Portfolio & Courses</title>
+  <title>Atikuzzaman | Portfolio & Courses</title>
 
   <!-- PWA Meta -->
   <meta name="theme-color" content="#1a7fa8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="AH Portfolio" />
-  <meta name="description" content="Md. Akib Hossain — EEE Engineer, Gas Field Professional & Python Developer" />
+  <meta name="apple-mobile-web-app-title" content="MA Portfolio" />
+  <meta name="description" content="Md. Atikuzzaman — EEE Engineer, Gas Field Professional & Python Developer" />
   <link rel="manifest" href="manifest.json" />
 
   <!-- Tailwind CDN -->
@@ -547,7 +547,7 @@
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
         <div class="flex-shrink-0 flex items-center gap-2 mr-1">
           <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm" style="background:linear-gradient(135deg,#1a7fa8,#f97316);">AH</div>
-          <span class="font-display font-bold text-white hidden sm:block" style="font-size:1rem;">Akib Hossain</span>
+          <span class="font-display font-bold text-white hidden sm:block" style="font-size:1rem;">Atikuzzaman</span>
         </div>
         <div id="nav-tabs" class="flex items-center gap-1 flex-1">
           <button class="nav-tab active" onclick="switchTab('notes')" data-tab="notes"><i data-lucide="pencil" class="w-4 h-4"></i> Notes</button>
@@ -566,12 +566,12 @@
     <header class="relative pt-16 pb-10 px-4 text-center">
       <div class="max-w-3xl mx-auto">
         <p class="text-xs font-medium mb-3 tracking-widest uppercase" style="color:#4de8a0; letter-spacing:.22em; font-family:'Hind Siliguri',sans-serif;">সেন্টমার্টিন · নারিকেল জিঞ্জিরা · বঙ্গোপসাগর</p>
-        <h1 class="hero-title mb-4">Md. Akib Hossain</h1>
+        <h1 class="hero-title mb-4">Md. Atikuzzaman</h1>
         <p class="text-base mb-2" style="color:rgba(180,245,210,.82); font-family:'Hind Siliguri',sans-serif;">EEE Engineer · Gas Field Professional · Python Developer</p>
         <p class="text-sm mb-7" style="color:rgba(120,200,160,.58); font-family:'Hind Siliguri',sans-serif;">Bakhrabad Gas Field, BGFCL | Petrobangla</p>
         <div class="flex flex-wrap gap-2 justify-center">
           <span class="tag">⚡ Electrical Engineering</span>
-          <span class="tag">🐍 Python</span>
+          <span class="tag">💻 Python</span>
           <span class="tag">🌊 Gas Field Ops</span>
           <span class="tag">🎓 BIM Training</span>
           <span class="tag">📐 Web Dev</span>
@@ -662,7 +662,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="glass p-6 flex flex-col items-center text-center lg:col-span-1">
             <div class="w-28 h-28 rounded-full mb-4 flex items-center justify-center text-4xl font-bold" style="background:linear-gradient(135deg,#1a7fa8,#f97316);">AH</div>
-            <h3 class="text-xl font-bold text-white mb-1" style="font-family:'Playfair Display',serif;">Md. Akib Hossain</h3>
+            <h3 class="text-xl font-bold text-white mb-1" style="font-family:'Playfair Display',serif;">Md. Atikuzzaman</h3>
             <p class="text-sm mb-4" style="color:#4de8a0;">Md. Atikuzzaman</p>
             <div class="space-y-2 w-full text-left">
               <div class="flex items-center gap-3 text-sm" style="color:rgba(180,240,210,.8);">
@@ -705,7 +705,7 @@
               </h4>
               <div class="flex flex-wrap gap-2">
                 <span class="tag">🌊 সমুদ্র ভ্রমণ</span>
-                <span class="tag">🐍 Python</span>
+                <span class="tag">💻 Python</span>
                 <span class="tag">📖 Quran Tafsir</span>
                 <span class="tag">🏏 Cricket</span>
                 <span class="tag">🎯 Carrom</span>
@@ -749,7 +749,7 @@
         <p class="text-sm mb-4" style="color:rgba(160,240,200,.65); font-family:'Hind Siliguri',sans-serif;">আপনার secret key দিন:</p>
         <input id="admin-key-input" type="password" class="inp mb-4" placeholder="Secret Key..." />
         <button class="btn-primary w-full" onclick="adminLogin()">Login</button>
-        <p class="text-xs mt-3 text-center" style="color:rgba(120,200,160,.4);">Default: <code>akib2024</code> — index.html এ পরিবর্তন করুন</p>
+        <p class="text-xs mt-3 text-center" style="color:rgba(120,200,160,.4);">Owner-only access — key সেট করতে index.html এর ADMIN_SECRET_HASH দেখুন</p>
       </div>
       <div id="admin-logout-panel" class="hidden">
         <p class="text-sm mb-4" style="color:#4de8a0; font-family:'Hind Siliguri',sans-serif;">✅ Admin হিসেবে logged in।</p>
@@ -879,8 +879,23 @@
   <!-- ══ JAVASCRIPT ═════════════════════════════════════════ -->
   <script>
   // ─── CONFIG ────────────────────────────────────────────────
-  // 🔑 CHANGE THIS before deploying to GitHub!
-  const ADMIN_SECRET = 'akib2024';
+  // 🔑 Admin key is stored as a SHA-256 hash, not plaintext, so it isn't
+  // sitting in the page source in the clear. NOTE: since this app has no
+  // backend server, "admin" only ever controls what's saved in *that one
+  // visitor's own browser* (localStorage) — it is not a real shared login,
+  // just a way to hide the edit buttons from casual visitors.
+  //
+  // Default key is: "atik-secure-2026"  — CHANGE THIS before deploying!
+  // To make a new key: open devtools console anywhere and run
+  //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourNewKey'))
+  //     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+  // then paste the printed hash below.
+  const ADMIN_SECRET_HASH = 'e898e5d5a6a1e32c5b768a2bc63a8013d3b64bbd1e0be477b2c338e1e1ee1449';
+  let adminAttempts = 0, adminLockUntil = 0;
+  async function sha256Hex(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
 
   // Free Pexels photos — tropical beach, coconut palms, golden sunset, blue sea
   // (Saint Martin / Bay of Bengal atmosphere)
@@ -987,12 +1002,21 @@
     document.getElementById('admin-logout-panel').classList.toggle('hidden', !loggedIn);
     openModal('modal-admin');
   }
-  function adminLogin() {
-    if (document.getElementById('admin-key-input').value.trim() === ADMIN_SECRET) {
-      isAdmin=true; sessionStorage.setItem('ah_admin','1');
+  async function adminLogin() {
+    if (Date.now() < adminLockUntil) {
+      const secsLeft = Math.ceil((adminLockUntil-Date.now())/1000);
+      toast(`⏳ Too many tries. Wait ${secsLeft}s.`,'#ef4444');
+      return;
+    }
+    const val = document.getElementById('admin-key-input').value.trim();
+    const hash = await sha256Hex(val);
+    if (hash === ADMIN_SECRET_HASH) {
+      isAdmin=true; adminAttempts=0; sessionStorage.setItem('ah_admin','1');
       updateAdminUI(); closeModal('modal-admin');
       toast('✅ Admin logged in!','#10b981');
     } else {
+      adminAttempts++;
+      if (adminAttempts >= 5) { adminLockUntil = Date.now()+30000; adminAttempts=0; }
       toast('❌ Wrong key!','#ef4444');
       document.getElementById('admin-key-input').value='';
     }
@@ -1044,6 +1068,8 @@
   }
   const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  // Only allow http/https URLs to be used as href/src — blocks javascript: and data: URI injection
+  const safeUrl=u=>{ try{ const p=new URL(String(u), location.href); return ['http:','https:'].includes(p.protocol) ? p.href : '#'; }catch(e){ return '#'; } };
 
   // ─── POSTS ─────────────────────────────────────────────────
   const catInfo={
@@ -1067,7 +1093,7 @@
           <div class="flex-1 min-w-0">
             ${p.title?`<h3 class="font-bold text-white mb-0.5" style="font-size:1rem;">${esc(p.title)}</h3>`:''}
             <div class="flex items-center gap-2 text-xs flex-wrap" style="color:rgba(120,200,160,.5);">
-              <span>Akib Hossain</span><span>·</span><span>${fmtDate(p.ts)}</span>
+              <span>Atikuzzaman</span><span>·</span><span>${fmtDate(p.ts)}</span>
               <span class="tag" style="font-size:.62rem;">${cat.label}</span>
             </div>
           </div>
@@ -1130,7 +1156,7 @@
       const adm=isAdmin?`<button onclick="deleteItem('course','${cv.id}')" class="absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs" style="background:rgba(0,0,0,.55);">✕</button>`:'';
       return `<div class="video-card cursor-pointer" onclick="playCourse('${cv.id}')">
         <div class="relative aspect-video bg-gray-900">
-          ${thumb?`<img src="${thumb}" alt="${esc(cv.title)}" class="w-full h-full object-cover opacity-80"/>`:`<div class="w-full h-full flex items-center justify-center text-4xl">🎬</div>`}
+          ${thumb?`<img src="${esc(safeUrl(thumb))}" alt="${esc(cv.title)}" class="w-full h-full object-cover opacity-80"/>`:`<div class="w-full h-full flex items-center justify-center text-4xl">🎬</div>`}
           <div class="absolute inset-0 flex items-center justify-center">
             <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(0,0,0,.58);border:2px solid rgba(255,255,255,.35);">
               <i data-lucide="play" class="w-6 h-6 text-white ml-1"></i>
@@ -1166,7 +1192,7 @@
         <button onclick="document.getElementById('video-lightbox').remove()" style="color:#4de8a0;font-size:1.6rem;background:none;border:none;cursor:pointer;line-height:1;">✕</button>
       </div>
       <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:.85rem;border:1px solid rgba(60,180,120,.2);">
-        <iframe src="${url}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture"></iframe>
+        <iframe src="${esc(safeUrl(url))}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture"></iframe>
       </div>
       ${cv.desc?`<p style="color:rgba(160,240,200,.65);margin-top:.65rem;font-size:.83rem;">${esc(cv.desc)}</p>`:''}
     </div>`;
@@ -1206,7 +1232,7 @@
       } else if(info.type==='links') {
         try{
           const lk=JSON.parse(info.content);
-          body=`<div class="flex flex-wrap gap-3">${lk.map(l=>`<a href="${l.url}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm px-4 py-2 rounded-xl" style="background:rgba(26,127,168,.2);border:1px solid rgba(26,127,168,.3);color:#7ee8c8;">${l.icon||'🔗'} ${esc(l.label)}</a>`).join('')}</div>`;
+          body=`<div class="flex flex-wrap gap-3">${lk.map(l=>`<a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-sm px-4 py-2 rounded-xl" style="background:rgba(26,127,168,.2);border:1px solid rgba(26,127,168,.3);color:#7ee8c8;">${esc(l.icon||'🔗')} ${esc(l.label)}</a>`).join('')}</div>`;
         } catch{ body='<p class="text-sm text-red-400">Invalid JSON</p>'; }
       } else if(info.type==='timeline') {
         try{
@@ -1249,7 +1275,7 @@
       const adm=isAdmin?`<button onclick="deleteItem('embed','${em.id}')" class="btn-outline text-xs" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">🗑 Delete</button>`:'';
       let content='';
       if(em.type==='gsheet'||em.type==='iframe') {
-        content=`<iframe src="${esc(em.url)}" class="embed-frame" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups" allowfullscreen></iframe>`;
+        content=`<iframe src="${esc(safeUrl(em.url))}" class="embed-frame" loading="lazy" sandbox="allow-scripts allow-popups" allowfullscreen></iframe>`;
       } else if(em.type==='json') {
         content=`<div id="json-${em.id}" class="glass-light p-4"><div class="skel h-4 mb-2 w-full"></div><div class="skel h-4 mb-2 w-3/4"></div><div class="skel h-4 w-1/2"></div></div>`;
         setTimeout(()=>fetchJSON(em.id,em.url),120);
@@ -1262,7 +1288,7 @@
   async function fetchJSON(id,url) {
     const el=document.getElementById('json-'+id); if(!el) return;
     try {
-      const data=await (await fetch(url)).json();
+      const data=await (await fetch(safeUrl(url))).json();
       if(Array.isArray(data)&&data.length) {
         const keys=Object.keys(data[0]);
         el.innerHTML=`<div class="overflow-x-auto"><table style="width:100%;border-collapse:collapse;font-size:.78rem;"><thead><tr>${keys.map(k=>`<th style="text-align:left;padding:.45rem .7rem;color:#4de8a0;border-bottom:1px solid rgba(60,180,120,.15);">${esc(k)}</th>`).join('')}</tr></thead><tbody>${data.slice(0,20).map(row=>`<tr>${keys.map(k=>`<td style="padding:.35rem .7rem;color:rgba(200,245,220,.8);border-bottom:1px solid rgba(60,180,120,.07);">${esc(String(row[k]??''))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
@@ -1372,7 +1398,7 @@
        {title:'BIM Foundation Training',year:'2024',desc:'Bangladesh Institute of Management, Dhaka'},
      ]),ts:Date.now()},
     {id:'i3',title:'💡 About This Site',type:'text',
-     content:'GitHub Pages + localStorage — সম্পূর্ণ ফ্রি, লাইফটাইম।\n\nযেকেউ দেখতে পারবেন। শুধু Admin (Akib Hossain) নতুন content add করতে পারবেন।\n\n🌊 Theme: সেন্টমার্টিনের পড়ন্ত বিকেল + Deep Forest Green।',
+     content:'GitHub Pages + localStorage — সম্পূর্ণ ফ্রি, লাইফটাইম।\n\nযেকেউ দেখতে পারবেন। শুধু Admin (Atikuzzaman) নতুন content add করতে পারবেন।\n\n🌊 Theme: সেন্টমার্টিনের পড়ন্ত বিকেল + Deep Forest Green।',
      ts:Date.now()},
   ];}
 

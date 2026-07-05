@@ -1,4 +1,4 @@
-// ── Akib Hossain Portfolio — Service Worker v2 ──────────────
+// ── Atikuzzaman Portfolio — Service Worker v2 ──────────────
 const CACHE = 'ah-portfolio-v2';
 
 // Core files to pre-cache on install

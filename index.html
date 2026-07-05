@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akib Hossain | Portfolio & Courses</title>
+
+  <!-- PWA Meta -->
+  <meta name="theme-color" content="#1a7fa8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AH Portfolio" />
+  <meta name="description" content="Md. Akib Hossain — EEE Engineer, Gas Field Professional & Python Developer" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              900: '#0a1a0f',
+              800: '#0d2214',
+              700: '#112b19',
+              600: '#163520',
+              500: '#1c4228',
+            },
+            ocean: {
+              400: '#2e9ec9',
+              500: '#1a7fa8',
+              600: '#176690',
+            },
+            sunset: {
+              gold:  '#f59e0b',
+              amber: '#f97316',
+              rose:  '#fb7185',
+            }
+          },
+          fontFamily: {
+            display: ['Playfair Display','serif'],
+            body:    ['Inter','sans-serif'],
+            bangla:  ['Hind Siliguri','sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Reset & scrollbar ─────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(30,180,150,.3); border-radius: 99px; }
+
+    html, body { margin: 0; padding: 0; }
+
+    /* ════════════════════════════════════════════════
+       BACKGROUND SYSTEM
+       Layer 1 — Real photo (Pexels/Unsplash CDN, free)
+       Layer 2 — Deep forest green gradient overlay
+       Layer 3 — Subtle dark vignette
+    ════════════════════════════════════════════════ */
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a1a0f;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ════════════════════════════════════════════
+       BACKGROUND: Saint Martin beach photo — very
+       muted/soft so eyes stay comfortable.
+       Photo opacity ~30% via the heavy overlay.
+    ════════════════════════════════════════════ */
+
+    /* Layer 0 — solid forest-green base (fallback & base colour) */
+    body { background-color: #071510; }
+
+    /* Layer 1 — actual beach photo, kept dim intentionally */
+    #bg-photo {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      /* photo loaded via JS with fallback chain */
+      background-color: #071510;          /* shows until photo loads */
+      background-size: cover;
+      background-position: center 55%;
+      background-repeat: no-repeat;
+      /* scale up slightly so parallax breathing doesn't show edges */
+      transform: scale(1.04);
+      animation: bgBreath 22s ease-in-out infinite alternate;
+      /* cap opacity so the photo itself is already half-strength
+         before the overlay — this is the KEY fix */
+      opacity: 0.42;
+    }
+
+    @keyframes bgBreath {
+      0%   { background-position: center 53%; transform: scale(1.04); }
+      100% { background-position: center 58%; transform: scale(1.065); }
+    }
+
+    /* Layer 2 — Deep Forest Green tinted gradient overlay
+       High opacity = photo feels soft & dreamy, not distracting */
+    #bg-forest-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background:
+        /* very dark forest top-left corner */
+        radial-gradient(ellipse 90% 55% at 5% 5%,
+          rgba(4,14,8,0.92) 0%, transparent 65%),
+        /* central soft darkening */
+        radial-gradient(ellipse 120% 90% at 50% 50%,
+          rgba(5,16,10,0.30) 0%, rgba(4,12,8,0.72) 100%),
+        /* bottom-to-top gradient — deepest at bottom */
+        linear-gradient(
+          to top,
+          rgba(3,10,6,0.96)  0%,
+          rgba(5,16,10,0.82) 25%,
+          rgba(6,18,11,0.65) 55%,
+          rgba(7,20,12,0.42) 80%,
+          rgba(8,22,13,0.28) 100%
+        );
+      pointer-events: none;
+    }
+
+    /* Layer 3 — subtle side-edge darkening */
+    #bg-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      background:
+        radial-gradient(ellipse 110% 90% at 50% 45%,
+          transparent 35%,
+          rgba(3,10,6,0.68) 100%
+        );
+      pointer-events: none;
+    }
+
+    /* Layer 4 — very faint ocean-blue/sunset colour wash
+       gives the "Saint Martin golden hour" tint without
+       letting the raw photo dominate */
+    #bg-colour-wash {
+      position: fixed;
+      inset: 0;
+      z-index: 3; /* sits above photo+overlay, below waves+content */
+      background:
+        /* golden-amber pool — where the sun would be (right-centre) */
+        radial-gradient(ellipse 40% 35% at 68% 38%,
+          rgba(180,100,20,0.18) 0%, transparent 70%),
+        /* ocean-blue tint across lower half */
+        linear-gradient(
+          to top,
+          rgba(8,55,80,0.32)  0%,
+          rgba(5,40,60,0.18) 40%,
+          transparent        70%
+        ),
+        /* deep forest green wash everywhere */
+        linear-gradient(
+          160deg,
+          rgba(8,28,14,0.55) 0%,
+          rgba(6,22,12,0.35) 50%,
+          rgba(4,18,10,0.55) 100%
+        );
+      pointer-events: none;
+    }
+
+    /* ── Animated wave strip (bottom) ──────────────── */
+    #wave-layer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 28vh;
+      z-index: 4;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .wave { position: absolute; bottom: 0; width: 200%; height: 100%; }
+    .wave svg { width: 100%; height: 100%; }
+
+    .wave-1 { animation: waveMove 9s linear infinite; opacity: .35; }
+    .wave-2 { animation: waveMove 14s linear infinite reverse; opacity: .22; }
+    .wave-3 { animation: waveMove 19s linear infinite; opacity: .15; }
+
+    @keyframes waveMove {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Floating light particles ──────────────────── */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatUp linear infinite;
+      z-index: 5;
+      mix-blend-mode: screen;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) translateX(0) scale(1); opacity: .55; }
+      60%  { transform: translateY(-50vh) translateX(15px) scale(.5); opacity: .2; }
+      100% { transform: translateY(-90vh) translateX(-8px) scale(.1); opacity: 0; }
+    }
+
+    /* ════════════════════════════════════════════════
+       GLASS COMPONENTS
+    ════════════════════════════════════════════════ */
+    .glass {
+      background: rgba(8, 25, 14, 0.60);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border: 1px solid rgba(60, 180, 120, 0.18);
+      border-radius: 1.25rem;
+    }
+
+    .glass-light {
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(120,220,160,.14);
+      border-radius: 1rem;
+    }
+
+    /* Nav */
+    .nav-tab {
+      cursor: pointer;
+      padding: .45rem 1.1rem;
+      border-radius: .65rem;
+      font-size: .82rem;
+      font-weight: 500;
+      color: rgba(180,240,200,.7);
+      transition: all .22s;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .nav-tab:hover {
+      background: rgba(60,180,120,.14);
+      color: #c8ffdc;
+    }
+    .nav-tab.active {
+      background: linear-gradient(135deg, rgba(26,127,168,.38), rgba(249,115,22,.24));
+      color: #fff;
+      border-color: rgba(60,200,150,.28);
+      box-shadow: 0 2px 16px rgba(26,127,168,.15);
+    }
+
+    /* Tab pane */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Post card */
+    .post-card {
+      background: rgba(8,22,13,.62);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(60,180,120,.14);
+      border-radius: 1rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(0,80,40,.25);
+    }
+
+    /* Video card */
+    .video-card {
+      background: rgba(6,18,10,.68);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(60,180,120,.14);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .video-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 44px rgba(0,80,40,.28);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, #1a7fa8, #f97316);
+      border-radius: .7rem;
+      padding: .55rem 1.3rem;
+      font-weight: 600;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+      font-size: .88rem;
+    }
+    .btn-primary:hover { opacity: .86; transform: scale(1.03); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(60,180,120,.32);
+      border-radius: .7rem;
+      padding: .48rem 1.1rem;
+      font-weight: 500;
+      color: rgba(160,240,200,.8);
+      cursor: pointer;
+      transition: all .2s;
+      font-size: .83rem;
+    }
+    .btn-outline:hover { background: rgba(60,180,120,.12); color: #c8ffdc; border-color: rgba(60,200,140,.55); }
+
+    /* Input */
+    .inp {
+      width: 100%;
+      background: rgba(8,22,13,.75);
+      border: 1px solid rgba(60,180,120,.24);
+      border-radius: .7rem;
+      padding: .65rem .95rem;
+      color: #d8f5e4;
+      font-size: .88rem;
+      outline: none;
+      transition: border .2s;
+    }
+    .inp:focus { border-color: rgba(26,127,168,.65); box-shadow: 0 0 0 3px rgba(26,127,168,.12); }
+    .inp::placeholder { color: rgba(100,180,130,.4); }
+    textarea.inp { resize: vertical; min-height: 100px; }
+
+    /* Section title */
+    .sec-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.45rem, 4vw, 2.1rem);
+      font-weight: 900;
+      background: linear-gradient(90deg, #4de8a0, #60d0f0, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Hero title */
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 7vw, 4.8rem);
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, #a5f3d8 30%, #60d0f0 60%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+    }
+
+    /* Tag */
+    .tag {
+      display: inline-block;
+      background: rgba(26,127,168,.22);
+      color: #7ee8c8;
+      border: 1px solid rgba(26,127,168,.3);
+      border-radius: 999px;
+      padding: .12rem .7rem;
+      font-size: .72rem;
+      font-weight: 500;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(5px);
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #081510;
+      border: 1px solid rgba(60,180,120,.22);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      z-index: 9999;
+      padding: .75rem 1.3rem;
+      border-radius: .8rem;
+      font-size: .88rem;
+      font-weight: 500;
+      color: #fff;
+      transform: translateY(4rem);
+      opacity: 0;
+      transition: all .32s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+      max-width: 280px;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Nav scroll */
+    #nav-tabs { overflow-x: auto; scrollbar-width: none; }
+    #nav-tabs::-webkit-scrollbar { display: none; }
+
+    /* Skill bar */
+    .skill-bar-track { height: 7px; background: rgba(60,180,120,.12); border-radius: 99px; overflow: hidden; }
+    .skill-bar-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #1a7fa8, #4de8a0); transition: width 1.3s cubic-bezier(.4,0,.2,1); }
+
+    /* Timeline */
+    .timeline-line { position: absolute; left: 18px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #1a7fa8, #4de8a0, transparent); }
+    .timeline-dot  { width: 13px; height: 13px; border-radius: 50%; background: linear-gradient(135deg, #1a7fa8, #4de8a0); flex-shrink: 0; margin-top: 4px; }
+
+    /* Embed */
+    .embed-frame { width: 100%; height: 400px; border-radius: .7rem; border: 1px solid rgba(60,180,120,.18); background: rgba(8,22,13,.5); }
+
+    /* Skeleton */
+    .skel {
+      background: linear-gradient(90deg, rgba(60,180,120,.08) 25%, rgba(60,180,120,.16) 50%, rgba(60,180,120,.08) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: .5rem;
+    }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+    /* Admin lock */
+    #admin-lock-btn {
+      position: fixed;
+      bottom: 1.5rem; left: 1.5rem;
+      z-index: 200;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(8,22,13,.85);
+      border: 1px solid rgba(60,180,120,.3);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,.3);
+    }
+    #admin-lock-btn:hover { background: rgba(26,127,168,.35); border-color: rgba(26,127,168,.55); }
+
+    /* Course badge */
+    .course-badge {
+      position: absolute; top: 9px; right: 9px;
+      background: linear-gradient(135deg, #1a7fa8, #f97316);
+      color: #fff; font-size: .68rem; font-weight: 700;
+      padding: .18rem .55rem; border-radius: 99px;
+    }
+
+    /* Reaction btn */
+    .react-btn {
+      background: rgba(60,180,120,.1);
+      border: 1px solid rgba(60,180,120,.2);
+      border-radius: .5rem;
+      padding: .28rem .65rem;
+      color: rgba(160,240,200,.75);
+      font-size: .78rem;
+      cursor: pointer;
+      transition: all .18s;
+      display: flex; align-items: center; gap: .3rem;
+    }
+    .react-btn:hover { background: rgba(60,180,120,.2); color: #c8ffdc; }
+    .react-btn.liked { background: rgba(251,146,60,.2); border-color: rgba(251,146,60,.4); color: #fbbf24; }
+
+    /* PWA install banner */
+    #pwa-banner {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      z-index: 190;
+      background: rgba(8,22,13,.92);
+      border: 1px solid rgba(60,180,120,.35);
+      border-radius: 1rem;
+      padding: 1rem 1.25rem;
+      max-width: 280px;
+      display: none;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    #pwa-banner.show { display: block; }
+
+    /* Photo credit */
+    #photo-credit {
+      position: fixed;
+      bottom: .5rem; right: .5rem;
+      z-index: 6;
+      font-size: .6rem;
+      color: rgba(255,255,255,.25);
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ BACKGROUND LAYERS ══════════════════════════════════ -->
+  <!-- Real photo -->
+  <div id="bg-photo"></div>
+  <!-- Forest green overlay (makes it breathable) -->
+  <div id="bg-forest-overlay"></div>
+  <!-- Edge vignette -->
+  <div id="bg-vignette"></div>
+
+  <!-- Colour wash (golden-hour + ocean tint) -->
+  <div id="bg-colour-wash"></div>
+
+  <!-- Animated waves -->
+  <div id="wave-layer">
+    <div class="wave wave-1">
+      <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,80 C240,160 480,0 720,80 C960,160 1200,0 1440,80 L1440,200 L0,200 Z" fill="rgba(10,40,20,0.55)"/>
+      </svg>
+    </div>
+    <div class="wave wave-2">
+      <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,100 C360,40 720,160 1080,80 C1260,40 1380,120 1440,100 L1440,200 L0,200 Z" fill="rgba(8,30,16,0.42)"/>
+      </svg>
+    </div>
+    <div class="wave wave-3">
+      <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,120 C300,60 600,180 900,100 C1100,50 1300,140 1440,120 L1440,200 L0,200 Z" fill="rgba(6,20,12,0.30)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Floating particles -->
+  <div id="particles"></div>
+
+  <!-- Photo credit -->
+  <div id="photo-credit">Photo: Pexels (Free license)</div>
+
+  <!-- ══ MAIN LAYOUT ════════════════════════════════════════ -->
+  <div class="relative z-10 min-h-screen flex flex-col" style="z-index:6;">
+
+    <!-- NAV -->
+    <nav class="sticky top-0" style="z-index:50; background:rgba(6,16,10,.78); backdrop-filter:blur(20px); border-bottom:1px solid rgba(60,180,120,.12);">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div class="flex-shrink-0 flex items-center gap-2 mr-1">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm" style="background:linear-gradient(135deg,#1a7fa8,#f97316);">AH</div>
+          <span class="font-display font-bold text-white hidden sm:block" style="font-size:1rem;">Akib Hossain</span>
+        </div>
+        <div id="nav-tabs" class="flex items-center gap-1 flex-1">
+          <button class="nav-tab active" onclick="switchTab('notes')" data-tab="notes"><i data-lucide="pencil" class="w-4 h-4"></i> Notes</button>
+          <button class="nav-tab" onclick="switchTab('courses')" data-tab="courses"><i data-lucide="play-circle" class="w-4 h-4"></i> Courses</button>
+          <button class="nav-tab" onclick="switchTab('static')" data-tab="static"><i data-lucide="layout-grid" class="w-4 h-4"></i> Info</button>
+          <button class="nav-tab" onclick="switchTab('dynamic')" data-tab="dynamic"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Live Data</button>
+          <button class="nav-tab" onclick="switchTab('about')" data-tab="about"><i data-lucide="user" class="w-4 h-4"></i> About</button>
+        </div>
+        <div id="admin-badge" class="hidden flex-shrink-0">
+          <span class="text-xs font-semibold px-3 py-1 rounded-full" style="background:linear-gradient(135deg,rgba(26,127,168,.3),rgba(77,232,160,.2)); color:#4de8a0; border:1px solid rgba(77,232,160,.3);">Admin</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="relative pt-16 pb-10 px-4 text-center">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-xs font-medium mb-3 tracking-widest uppercase" style="color:#4de8a0; letter-spacing:.22em; font-family:'Hind Siliguri',sans-serif;">সেন্টমার্টিন · নারিকেল জিঞ্জিরা · বঙ্গোপসাগর</p>
+        <h1 class="hero-title mb-4">Md. Akib Hossain</h1>
+        <p class="text-base mb-2" style="color:rgba(180,245,210,.82); font-family:'Hind Siliguri',sans-serif;">EEE Engineer · Gas Field Professional · Python Developer</p>
+        <p class="text-sm mb-7" style="color:rgba(120,200,160,.58); font-family:'Hind Siliguri',sans-serif;">Bakhrabad Gas Field, BGFCL | Petrobangla</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <span class="tag">⚡ Electrical Engineering</span>
+          <span class="tag">🐍 Python</span>
+          <span class="tag">🌊 Gas Field Ops</span>
+          <span class="tag">🎓 BIM Training</span>
+          <span class="tag">📐 Web Dev</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-1 max-w-6xl mx-auto w-full px-4 pb-28">
+
+      <!-- ══ TAB 1: NOTES ══════════════════════════════════ -->
+      <section id="tab-notes" class="tab-pane active">
+        <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
+          <h2 class="sec-title">Notes & Thoughts</h2>
+          <div id="notes-admin-btn" class="hidden">
+            <button class="btn-primary" onclick="openModal('modal-new-post')">
+              <span class="flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> New Note</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex gap-2 mb-5 flex-wrap">
+          <button class="btn-outline text-xs act-filter" onclick="filterPosts('all',this)">All</button>
+          <button class="btn-outline text-xs" onclick="filterPosts('thought',this)">💭 Thoughts</button>
+          <button class="btn-outline text-xs" onclick="filterPosts('tech',this)">💻 Tech</button>
+          <button class="btn-outline text-xs" onclick="filterPosts('islam',this)">🌙 Islam</button>
+          <button class="btn-outline text-xs" onclick="filterPosts('gas',this)">⚡ Gas Field</button>
+        </div>
+        <div id="posts-container" class="space-y-5"></div>
+        <div id="posts-empty" class="hidden text-center py-16">
+          <p class="text-5xl mb-4">📝</p>
+          <p style="color:rgba(120,200,160,.5); font-family:'Hind Siliguri',sans-serif;">Admin হিসেবে প্রথম নোটটি লিখুন!</p>
+        </div>
+      </section>
+
+      <!-- ══ TAB 2: COURSES ════════════════════════════════ -->
+      <section id="tab-courses" class="tab-pane">
+        <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
+          <h2 class="sec-title">Video Courses</h2>
+          <div id="courses-admin-btn" class="hidden">
+            <button class="btn-primary" onclick="openModal('modal-new-course')">
+              <span class="flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add Course</span>
+            </button>
+          </div>
+        </div>
+        <div id="courses-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        <div id="courses-empty" class="hidden text-center py-16">
+          <p class="text-5xl mb-4">🎬</p>
+          <p style="color:rgba(120,200,160,.5); font-family:'Hind Siliguri',sans-serif;">Admin হিসেবে প্রথম কোর্সটি যোগ করুন!</p>
+        </div>
+      </section>
+
+      <!-- ══ TAB 3: STATIC INFO ════════════════════════════ -->
+      <section id="tab-static" class="tab-pane">
+        <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
+          <h2 class="sec-title">Info & Portfolio</h2>
+          <div id="static-admin-btn" class="hidden">
+            <button class="btn-primary" onclick="openModal('modal-new-info')">
+              <span class="flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add Section</span>
+            </button>
+          </div>
+        </div>
+        <div id="static-container" class="space-y-6"></div>
+      </section>
+
+      <!-- ══ TAB 4: DYNAMIC DATA ═══════════════════════════ -->
+      <section id="tab-dynamic" class="tab-pane">
+        <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
+          <h2 class="sec-title">Live Data</h2>
+          <div id="dynamic-admin-btn" class="hidden">
+            <button class="btn-primary" onclick="openModal('modal-new-embed')">
+              <span class="flex items-center gap-2"><i data-lucide="link" class="w-4 h-4"></i> Add Source</span>
+            </button>
+          </div>
+        </div>
+        <div id="embeds-container" class="space-y-6"></div>
+        <div id="embeds-empty" class="hidden text-center py-16">
+          <p class="text-5xl mb-4">📊</p>
+          <p style="color:rgba(120,200,160,.5); font-family:'Hind Siliguri',sans-serif;">Google Sheet বা ওয়েবসাইট embed করুন!</p>
+        </div>
+      </section>
+
+      <!-- ══ TAB 5: ABOUT ══════════════════════════════════ -->
+      <section id="tab-about" class="tab-pane">
+        <div class="mb-5">
+          <h2 class="sec-title mb-0.5">About Me</h2>
+          <p style="color:rgba(120,200,160,.45); font-size:.82rem;">আমার সম্পর্কে</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="glass p-6 flex flex-col items-center text-center lg:col-span-1">
+            <div class="w-28 h-28 rounded-full mb-4 flex items-center justify-center text-4xl font-bold" style="background:linear-gradient(135deg,#1a7fa8,#f97316);">AH</div>
+            <h3 class="text-xl font-bold text-white mb-1" style="font-family:'Playfair Display',serif;">Md. Akib Hossain</h3>
+            <p class="text-sm mb-4" style="color:#4de8a0;">Md. Atikuzzaman</p>
+            <div class="space-y-2 w-full text-left">
+              <div class="flex items-center gap-3 text-sm" style="color:rgba(180,240,210,.8);">
+                <i data-lucide="briefcase" class="w-4 h-4 flex-shrink-0" style="color:#fbbf24;"></i>
+                <span style="font-family:'Hind Siliguri',sans-serif;">Assistant Manager — BGFCL</span>
+              </div>
+              <div class="flex items-center gap-3 text-sm" style="color:rgba(180,240,210,.8);">
+                <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:#fbbf24;"></i>
+                <span style="font-family:'Hind Siliguri',sans-serif;">বাখরাবাদ গ্যাস ফিল্ড, কুমিল্লা</span>
+              </div>
+              <div class="flex items-center gap-3 text-sm" style="color:rgba(180,240,210,.8);">
+                <i data-lucide="graduation-cap" class="w-4 h-4 flex-shrink-0" style="color:#fbbf24;"></i>
+                <span>B.Sc. in EEE</span>
+              </div>
+              <div class="flex items-center gap-3 text-sm" style="color:rgba(180,240,210,.8);">
+                <i data-lucide="home" class="w-4 h-4 flex-shrink-0" style="color:#fbbf24;"></i>
+                <span style="font-family:'Hind Siliguri',sans-serif;">বাগাতিপাড়া, নাটোর</span>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-2 space-y-5">
+            <div class="glass p-5">
+              <h4 class="text-white font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="zap" class="w-4 h-4" style="color:#fbbf24;"></i> Technical Skills
+              </h4>
+              <div id="skills-list" class="space-y-3"></div>
+            </div>
+            <div class="glass p-5">
+              <h4 class="text-white font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="git-branch" class="w-4 h-4" style="color:#fbbf24;"></i> Journey
+              </h4>
+              <div class="relative pl-10">
+                <div class="timeline-line"></div>
+                <div id="timeline-list" class="space-y-5"></div>
+              </div>
+            </div>
+            <div class="glass p-5">
+              <h4 class="text-white font-semibold mb-3 flex items-center gap-2">
+                <i data-lucide="heart" class="w-4 h-4" style="color:#fb7185;"></i> Interests
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <span class="tag">🌊 সমুদ্র ভ্রমণ</span>
+                <span class="tag">🐍 Python</span>
+                <span class="tag">📖 Quran Tafsir</span>
+                <span class="tag">🏏 Cricket</span>
+                <span class="tag">🎯 Carrom</span>
+                <span class="tag">🧠 Neuroscience</span>
+                <span class="tag">💡 Self Improvement</span>
+                <span class="tag">📡 Gas Engineering</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ══ ADMIN LOCK BTN ════════════════════════════════════ -->
+  <button id="admin-lock-btn" title="Admin (Ctrl+Shift+A)" onclick="toggleAdminModal()">
+    <i data-lucide="lock" class="w-5 h-5" style="color:#4de8a0;" id="lock-icon"></i>
+  </button>
+
+  <!-- ══ PWA INSTALL BANNER ═════════════════════════════════ -->
+  <div id="pwa-banner">
+    <p class="text-white font-semibold text-sm mb-1">📱 App হিসেবে Install করুন</p>
+    <p class="text-xs mb-3" style="color:rgba(160,240,200,.65);">Desktop ও Android এ App হিসেবে ব্যবহার করুন — সম্পূর্ণ ফ্রি!</p>
+    <div class="flex gap-2">
+      <button class="btn-primary text-xs flex-1" onclick="installPWA()">Install</button>
+      <button class="btn-outline text-xs" onclick="document.getElementById('pwa-banner').classList.remove('show')">Later</button>
+    </div>
+  </div>
+
+  <!-- ══ MODALS ═════════════════════════════════════════════ -->
+
+  <!-- Admin -->
+  <div class="modal-overlay" id="modal-admin">
+    <div class="modal-box">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Admin Access</h3>
+        <button onclick="closeModal('modal-admin')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
+      </div>
+      <div id="admin-login-form">
+        <p class="text-sm mb-4" style="color:rgba(160,240,200,.65); font-family:'Hind Siliguri',sans-serif;">আপনার secret key দিন:</p>
+        <input id="admin-key-input" type="password" class="inp mb-4" placeholder="Secret Key..." />
+        <button class="btn-primary w-full" onclick="adminLogin()">Login</button>
+        <p class="text-xs mt-3 text-center" style="color:rgba(120,200,160,.4);">Default: <code>akib2024</code> — index.html এ পরিবর্তন করুন</p>
+      </div>
+      <div id="admin-logout-panel" class="hidden">
+        <p class="text-sm mb-4" style="color:#4de8a0; font-family:'Hind Siliguri',sans-serif;">✅ Admin হিসেবে logged in।</p>
+        <button class="btn-outline w-full" onclick="adminLogout()">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Post -->
+  <div class="modal-overlay" id="modal-new-post">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">New Note</h3>
+        <button onclick="closeModal('modal-new-post')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
+      </div>
+      <div class="space-y-3">
+        <input id="post-title" type="text" class="inp" placeholder="Title (optional)..." />
+        <textarea id="post-body" class="inp" rows="6" placeholder="তোমার মনের কথা লিখো..."></textarea>
+        <select id="post-category" class="inp">
+          <option value="thought">💭 Thought</option>
+          <option value="tech">💻 Tech</option>
+          <option value="islam">🌙 Islam</option>
+          <option value="gas">⚡ Gas Field</option>
+        </select>
+        <div class="flex gap-3 pt-1">
+          <button class="btn-primary flex-1" onclick="savePost()">Publish</button>
+          <button class="btn-outline flex-1" onclick="closeModal('modal-new-post')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Course -->
+  <div class="modal-overlay" id="modal-new-course">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Add Course</h3>
+        <button onclick="closeModal('modal-new-course')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
+      </div>
+      <div class="space-y-3">
+        <input id="course-title" type="text" class="inp" placeholder="Course Title..." />
+        <textarea id="course-desc" class="inp" rows="2" placeholder="Short description..."></textarea>
+        <select id="course-source" class="inp">
+          <option value="youtube">YouTube</option>
+          <option value="gdrive">Google Drive</option>
+        </select>
+        <input id="course-video-id" type="text" class="inp" placeholder="YouTube Video ID or Google Drive File ID..." />
+        <p class="text-xs" style="color:rgba(120,200,160,.4);">YT: URL এর ?v= এর পরের অংশ | Drive: /d/ ও /view এর মাঝের অংশ</p>
+        <input id="course-thumb" type="text" class="inp" placeholder="Thumbnail URL (blank = auto)" />
+        <div class="flex gap-2">
+          <input id="course-tag" type="text" class="inp" placeholder="Tag (Python, EEE...)" />
+          <input id="course-duration" type="text" class="inp" placeholder="Duration (45 min)" />
+        </div>
+        <div class="flex gap-3 pt-1">
+          <button class="btn-primary flex-1" onclick="saveCourse()">Add</button>
+          <button class="btn-outline flex-1" onclick="closeModal('modal-new-course')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Info -->
+  <div class="modal-overlay" id="modal-new-info">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Add Info Section</h3>
+        <button onclick="closeModal('modal-new-info')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
+      </div>
+      <div class="space-y-3">
+        <input id="info-title" type="text" class="inp" placeholder="Section Title..." />
+        <select id="info-type" class="inp" onchange="toggleInfoType()">
+          <option value="text">📝 Text Block</option>
+          <option value="skills">⚡ Skills (JSON)</option>
+          <option value="links">🔗 Links (JSON)</option>
+          <option value="timeline">📅 Timeline (JSON)</option>
+        </select>
+        <textarea id="info-content" class="inp" rows="5" placeholder="Content..."></textarea>
+        <p id="info-hint" class="text-xs" style="color:rgba(120,200,160,.4);">Plain text or Markdown.</p>
+        <div class="flex gap-3 pt-1">
+          <button class="btn-primary flex-1" onclick="saveInfo()">Add</button>
+          <button class="btn-outline flex-1" onclick="closeModal('modal-new-info')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Embed -->
+  <div class="modal-overlay" id="modal-new-embed">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Add Data Source</h3>
+        <button onclick="closeModal('modal-new-embed')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
+      </div>
+      <div class="space-y-3">
+        <input id="embed-title" type="text" class="inp" placeholder="Title..." />
+        <select id="embed-type" class="inp" onchange="updateEmbedHint()">
+          <option value="gsheet">📊 Google Sheets</option>
+          <option value="iframe">🌐 Website iframe</option>
+          <option value="json">⚡ JSON API</option>
+        </select>
+        <input id="embed-url" type="text" class="inp" placeholder="URL..." />
+        <p id="embed-hint" class="text-xs" style="color:rgba(120,200,160,.4);">Google Sheet: File → Share → Publish to web → Embed → src URL।</p>
+        <div class="flex gap-3 pt-1">
+          <button class="btn-primary flex-1" onclick="saveEmbed()">Add</button>
+          <button class="btn-outline flex-1" onclick="closeModal('modal-new-embed')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirm -->
+  <div class="modal-overlay" id="modal-confirm-delete">
+    <div class="modal-box" style="max-width:360px; text-align:center;">
+      <p class="text-4xl mb-3">🗑️</p>
+      <h3 class="text-white font-bold text-lg mb-2">Delete করবেন?</h3>
+      <p class="text-sm mb-5" style="color:rgba(160,240,200,.65);">এই item টি স্থায়ীভাবে মুছে যাবে।</p>
+      <div class="flex gap-3">
+        <button class="btn-primary flex-1" style="background:linear-gradient(135deg,#ef4444,#dc2626);" onclick="confirmDelete()">Delete</button>
+        <button class="btn-outline flex-1" onclick="closeModal('modal-confirm-delete')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- ══ JAVASCRIPT ═════════════════════════════════════════ -->
+  <script>
+  // ─── CONFIG ────────────────────────────────────────────────
+  // 🔑 CHANGE THIS before deploying to GitHub!
+  const ADMIN_SECRET = 'akib2024';
+
+  // Free Pexels photos — tropical beach, coconut palms, golden sunset, blue sea
+  // (Saint Martin / Bay of Bengal atmosphere)
+  // Photo opacity is kept at 0.42 in CSS + heavy forest-green overlay on top,
+  // so these appear as a soft, soothing background — not distracting.
+  const BG_PHOTOS = [
+    // Palm tree silhouettes + golden ocean sunset (closest to Saint Martin west beach)
+    'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1920&q=85',
+    // Coconut palms leaning over turquoise water + warm sky
+    'https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1920&q=85',
+    // Beach sunset — deep amber sky, calm sea
+    'https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=1920&q=85',
+    // Tropical island, clear blue water + palm overhead
+    'https://images.pexels.com/photos/1591361/pexels-photo-1591361.jpeg?auto=compress&cs=tinysrgb&w=1920&q=85',
+    // Calm ocean golden hour
+    'https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&w=1920&q=85',
+  ];
+
+  // ─── STATE ─────────────────────────────────────────────────
+  let isAdmin=false, posts=[], courses=[], infos=[], embeds=[];
+  let deleteTarget=null, deleteType=null, activeFilter='all';
+  let deferredInstall=null;
+
+  // ─── STORAGE ───────────────────────────────────────────────
+  const save=(k,d)=>{ try{localStorage.setItem(k,JSON.stringify(d))}catch(e){} };
+  const load=(k)=>{ try{const d=localStorage.getItem(k);return d?JSON.parse(d):null}catch(e){return null} };
+
+  // ─── BACKGROUND PHOTO LOADER ───────────────────────────────
+  function loadBgPhoto() {
+    const el = document.getElementById('bg-photo');
+    let idx = 0;
+    function tryNext() {
+      if (idx >= BG_PHOTOS.length) return; // CSS gradient fallback stays — still looks great
+      const img = new Image();
+      img.onload = () => {
+        el.style.backgroundImage = `url('${BG_PHOTOS[idx]}')`;
+        // Slight fade-in after image loads
+        el.style.transition = 'opacity 1.8s ease';
+        el.style.opacity = '0.42';
+      };
+      img.onerror = () => { idx++; setTimeout(tryNext, 300); };
+      img.src = BG_PHOTOS[idx];
+    }
+    // Start invisible — reveal smoothly on load
+    el.style.opacity = '0';
+    tryNext();
+  }
+
+  // ─── PWA ───────────────────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstall = e;
+    setTimeout(()=>document.getElementById('pwa-banner').classList.add('show'), 4000);
+  });
+
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('pwa-banner').classList.remove('show');
+    toast('✅ App installed!', '#10b981');
+  });
+
+  function installPWA() {
+    if (!deferredInstall) {
+      toast('Browser এর address bar থেকে Install করুন।', '#1a7fa8');
+      return;
+    }
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(r => {
+      if (r.outcome === 'accepted') {
+        document.getElementById('pwa-banner').classList.remove('show');
+        toast('✅ Installing...', '#10b981');
+      }
+      deferredInstall = null;
+    });
+  }
+
+  // ─── PARTICLES ─────────────────────────────────────────────
+  function spawnParticles() {
+    const c = document.getElementById('particles');
+    for (let i=0; i<18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random()*5+2;
+      const x    = Math.random()*100;
+      const dur  = Math.random()*14+8;
+      const del  = Math.random()*12;
+      const col  = Math.random()>.5
+        ? `rgba(77,232,160,${(Math.random()*.4+.15).toFixed(2)})`
+        : `rgba(251,191,36,${(Math.random()*.35+.1).toFixed(2)})`;
+      p.style.cssText = `width:${size}px;height:${size}px;left:${x}%;bottom:-8px;background:${col};animation-duration:${dur}s;animation-delay:-${del}s;`;
+      c.appendChild(p);
+    }
+  }
+
+  // ─── ADMIN ─────────────────────────────────────────────────
+  function toggleAdminModal() {
+    const loggedIn = isAdmin;
+    document.getElementById('admin-login-form').classList.toggle('hidden', loggedIn);
+    document.getElementById('admin-logout-panel').classList.toggle('hidden', !loggedIn);
+    openModal('modal-admin');
+  }
+  function adminLogin() {
+    if (document.getElementById('admin-key-input').value.trim() === ADMIN_SECRET) {
+      isAdmin=true; sessionStorage.setItem('ah_admin','1');
+      updateAdminUI(); closeModal('modal-admin');
+      toast('✅ Admin logged in!','#10b981');
+    } else {
+      toast('❌ Wrong key!','#ef4444');
+      document.getElementById('admin-key-input').value='';
+    }
+  }
+  function adminLogout() {
+    isAdmin=false; sessionStorage.removeItem('ah_admin');
+    updateAdminUI(); closeModal('modal-admin');
+    toast('Logged out.','#6b7280');
+  }
+  function updateAdminUI() {
+    document.getElementById('admin-badge').classList.toggle('hidden',!isAdmin);
+    ['notes-admin-btn','courses-admin-btn','static-admin-btn','dynamic-admin-btn'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.classList.toggle('hidden',!isAdmin);
+    });
+    const icon=document.getElementById('lock-icon');
+    icon.setAttribute('data-lucide', isAdmin?'unlock':'lock');
+    document.getElementById('admin-lock-btn').style.borderColor =
+      isAdmin ? 'rgba(77,232,160,.5)' : 'rgba(60,180,120,.3)';
+    lucide.createIcons();
+    renderPosts(); renderCourses(); renderStatic(); renderEmbeds();
+  }
+
+  // ─── TABS ──────────────────────────────────────────────────
+  function switchTab(name) {
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+name).classList.add('active');
+    document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+  }
+
+  // ─── MODAL ─────────────────────────────────────────────────
+  function openModal(id)  { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.modal-overlay').forEach(m=>{
+      m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('show'); });
+    });
+  });
+
+  // ─── TOAST ─────────────────────────────────────────────────
+  function toast(msg, color='#1a7fa8') {
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.style.background=color;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }
+  function fmtDate(ts) {
+    return new Date(ts).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
+  }
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+  // ─── POSTS ─────────────────────────────────────────────────
+  const catInfo={
+    thought:{ icon:'💭', color:'rgba(96,165,250,.2)',  border:'rgba(96,165,250,.3)',  label:'Thought' },
+    tech:   { icon:'💻', color:'rgba(52,211,153,.18)', border:'rgba(52,211,153,.3)',  label:'Tech' },
+    islam:  { icon:'🌙', color:'rgba(196,167,231,.18)',border:'rgba(196,167,231,.3)', label:'Islam' },
+    gas:    { icon:'⚡', color:'rgba(251,191,36,.18)', border:'rgba(251,191,36,.3)',  label:'Gas Field' },
+  };
+
+  function renderPosts() {
+    const c=document.getElementById('posts-container'), e=document.getElementById('posts-empty');
+    const filtered=activeFilter==='all'?posts:posts.filter(p=>p.category===activeFilter);
+    if(!filtered.length){ c.innerHTML=''; e.classList.remove('hidden'); return; }
+    e.classList.add('hidden');
+    c.innerHTML=filtered.map(p=>{
+      const cat=catInfo[p.category]||catInfo.thought;
+      const adm=isAdmin?`<button onclick="deleteItem('post','${p.id}')" class="react-btn" style="color:rgba(248,113,113,.7)"><i data-lucide="trash-2" class="w-3 h-3"></i> Delete</button>`:'';
+      return `<article class="post-card p-5">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0" style="background:${cat.color};border:1px solid ${cat.border};">${cat.icon}</div>
+          <div class="flex-1 min-w-0">
+            ${p.title?`<h3 class="font-bold text-white mb-0.5" style="font-size:1rem;">${esc(p.title)}</h3>`:''}
+            <div class="flex items-center gap-2 text-xs flex-wrap" style="color:rgba(120,200,160,.5);">
+              <span>Akib Hossain</span><span>·</span><span>${fmtDate(p.ts)}</span>
+              <span class="tag" style="font-size:.62rem;">${cat.label}</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-sm leading-7 mb-4" style="color:rgba(200,245,220,.82); font-family:'Hind Siliguri',sans-serif; white-space:pre-wrap;">${esc(p.body)}</div>
+        <div class="flex items-center gap-2 flex-wrap pt-2 border-t" style="border-color:rgba(60,180,120,.1);">
+          <button class="react-btn ${p.liked?'liked':''}" onclick="toggleLike('${p.id}')">
+            ♥ ${p.liked?'Liked':'Like'} ${p.likes||0}
+          </button>
+          ${adm}
+        </div>
+      </article>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function savePost() {
+    const title=document.getElementById('post-title').value.trim();
+    const body=document.getElementById('post-body').value.trim();
+    const cat=document.getElementById('post-category').value;
+    if(!body){toast('কিছু লিখুন!','#f97316');return;}
+    posts.unshift({id:uid(),title,body,category:cat,ts:Date.now(),likes:0,liked:false});
+    save('ah_posts',posts); closeModal('modal-new-post');
+    document.getElementById('post-title').value='';
+    document.getElementById('post-body').value='';
+    renderPosts(); toast('✅ Published!','#10b981');
+  }
+
+  function filterPosts(cat,btn) {
+    activeFilter=cat;
+    document.querySelectorAll('.act-filter').forEach(b=>b.classList.remove('act-filter'));
+    btn.classList.add('act-filter');
+    renderPosts();
+  }
+
+  function toggleLike(id) {
+    const p=posts.find(x=>x.id===id); if(!p) return;
+    p.liked=!p.liked; p.likes=(p.likes||0)+(p.liked?1:-1);
+    save('ah_posts',posts); renderPosts();
+  }
+
+  // ─── COURSES ───────────────────────────────────────────────
+  function getEmbedUrl(src,vid) {
+    if(src==='youtube') return `https://www.youtube.com/embed/${vid}?rel=0`;
+    if(src==='gdrive')  return `https://drive.google.com/file/d/${vid}/preview`;
+    return '';
+  }
+  function getThumb(src,vid,custom) {
+    if(custom) return custom;
+    if(src==='youtube') return `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
+    return '';
+  }
+
+  function renderCourses() {
+    const c=document.getElementById('courses-container'), e=document.getElementById('courses-empty');
+    if(!courses.length){ c.innerHTML=''; e.classList.remove('hidden'); return; }
+    e.classList.add('hidden');
+    c.innerHTML=courses.map(cv=>{
+      const thumb=getThumb(cv.source,cv.videoId,cv.thumb);
+      const adm=isAdmin?`<button onclick="deleteItem('course','${cv.id}')" class="absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs" style="background:rgba(0,0,0,.55);">✕</button>`:'';
+      return `<div class="video-card cursor-pointer" onclick="playCourse('${cv.id}')">
+        <div class="relative aspect-video bg-gray-900">
+          ${thumb?`<img src="${thumb}" alt="${esc(cv.title)}" class="w-full h-full object-cover opacity-80"/>`:`<div class="w-full h-full flex items-center justify-center text-4xl">🎬</div>`}
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(0,0,0,.58);border:2px solid rgba(255,255,255,.35);">
+              <i data-lucide="play" class="w-6 h-6 text-white ml-1"></i>
+            </div>
+          </div>
+          <span class="course-badge">${cv.source==='youtube'?'▶ YT':'💾 Drive'}</span>
+          ${adm}
+        </div>
+        <div class="p-4">
+          <h4 class="font-bold text-white mb-1" style="font-size:.93rem;">${esc(cv.title)}</h4>
+          <p class="text-xs mb-3" style="color:rgba(120,200,160,.6); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(cv.desc||'')}</p>
+          <div class="flex items-center justify-between">
+            <span class="tag text-xs">${esc(cv.tag||'Course')}</span>
+            ${cv.duration?`<span class="text-xs" style="color:rgba(120,200,160,.5);">⏱ ${esc(cv.duration)}</span>`:''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function playCourse(id) {
+    const cv=courses.find(x=>x.id===id); if(!cv) return;
+    const url=getEmbedUrl(cv.source,cv.videoId);
+    const ex=document.getElementById('video-lightbox');
+    if(ex) ex.remove();
+    const lb=document.createElement('div');
+    lb.id='video-lightbox';
+    lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    lb.innerHTML=`<div style="width:100%;max-width:840px;">
+      <div class="flex items-center justify-between mb-3">
+        <h3 style="color:#fff;font-family:'Playfair Display',serif;font-size:1.05rem;">${esc(cv.title)}</h3>
+        <button onclick="document.getElementById('video-lightbox').remove()" style="color:#4de8a0;font-size:1.6rem;background:none;border:none;cursor:pointer;line-height:1;">✕</button>
+      </div>
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:.85rem;border:1px solid rgba(60,180,120,.2);">
+        <iframe src="${url}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture"></iframe>
+      </div>
+      ${cv.desc?`<p style="color:rgba(160,240,200,.65);margin-top:.65rem;font-size:.83rem;">${esc(cv.desc)}</p>`:''}
+    </div>`;
+    lb.addEventListener('click',e=>{ if(e.target===lb) lb.remove(); });
+    document.body.appendChild(lb);
+  }
+
+  function saveCourse() {
+    const title=document.getElementById('course-title').value.trim();
+    const desc=document.getElementById('course-desc').value.trim();
+    const source=document.getElementById('course-source').value;
+    const videoId=document.getElementById('course-video-id').value.trim();
+    const thumb=document.getElementById('course-thumb').value.trim();
+    const tag=document.getElementById('course-tag').value.trim();
+    const duration=document.getElementById('course-duration').value.trim();
+    if(!title||!videoId){toast('Title ও Video ID দিন!','#f97316');return;}
+    courses.unshift({id:uid(),title,desc,source,videoId,thumb,tag,duration,ts:Date.now()});
+    save('ah_courses',courses); closeModal('modal-new-course');
+    ['course-title','course-desc','course-video-id','course-thumb','course-tag','course-duration'].forEach(id=>document.getElementById(id).value='');
+    renderCourses(); toast('✅ Course added!','#10b981');
+  }
+
+  // ─── STATIC INFO ───────────────────────────────────────────
+  function renderStatic() {
+    const c=document.getElementById('static-container');
+    if(!infos.length){c.innerHTML='<p class="text-center py-16" style="color:rgba(120,200,160,.4);">কোনো তথ্য নেই।</p>';return;}
+    c.innerHTML=infos.map(info=>{
+      const adm=isAdmin?`<button onclick="deleteItem('info','${info.id}')" class="btn-outline text-xs" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">🗑 Delete</button>`:'';
+      let body='';
+      if(info.type==='text') {
+        body=`<div class="text-sm leading-7" style="color:rgba(200,245,220,.8);white-space:pre-wrap;font-family:'Hind Siliguri',sans-serif;">${esc(info.content)}</div>`;
+      } else if(info.type==='skills') {
+        try{
+          const sk=JSON.parse(info.content);
+          body=`<div class="space-y-3">${sk.map(s=>`<div><div class="flex justify-between text-sm mb-1" style="color:rgba(200,245,220,.8);"><span>${esc(s.name)}</span><span>${s.level}%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:${s.level}%"></div></div></div>`).join('')}</div>`;
+        } catch{ body='<p class="text-sm text-red-400">Invalid JSON</p>'; }
+      } else if(info.type==='links') {
+        try{
+          const lk=JSON.parse(info.content);
+          body=`<div class="flex flex-wrap gap-3">${lk.map(l=>`<a href="${l.url}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm px-4 py-2 rounded-xl" style="background:rgba(26,127,168,.2);border:1px solid rgba(26,127,168,.3);color:#7ee8c8;">${l.icon||'🔗'} ${esc(l.label)}</a>`).join('')}</div>`;
+        } catch{ body='<p class="text-sm text-red-400">Invalid JSON</p>'; }
+      } else if(info.type==='timeline') {
+        try{
+          const tl=JSON.parse(info.content);
+          body=`<div class="relative pl-10"><div class="timeline-line"></div><div class="space-y-5">${tl.map(it=>`<div class="flex items-start gap-3"><div class="timeline-dot flex-shrink-0 mt-1"></div><div><p class="font-semibold text-white text-sm">${esc(it.title)}</p><p class="text-xs" style="color:#fbbf24;">${esc(it.year||'')}</p>${it.desc?`<p class="text-xs mt-0.5" style="color:rgba(160,240,200,.6);">${esc(it.desc)}</p>`:''}</div></div>`).join('')}</div></div>`;
+        } catch{ body='<p class="text-sm text-red-400">Invalid JSON</p>'; }
+      }
+      return `<div class="glass p-5"><div class="flex items-center justify-between mb-4 flex-wrap gap-2"><h3 class="font-bold text-white" style="font-size:1rem;">${esc(info.title)}</h3>${adm}</div>${body}</div>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function saveInfo() {
+    const title=document.getElementById('info-title').value.trim();
+    const type=document.getElementById('info-type').value;
+    const content=document.getElementById('info-content').value.trim();
+    if(!title||!content){toast('Title ও Content দিন!','#f97316');return;}
+    infos.push({id:uid(),title,type,content,ts:Date.now()});
+    save('ah_infos',infos); closeModal('modal-new-info');
+    ['info-title','info-content'].forEach(id=>document.getElementById(id).value='');
+    renderStatic(); toast('✅ Section added!','#10b981');
+  }
+
+  function toggleInfoType() {
+    const hints={
+      text:'Plain text বা Markdown।',
+      skills:'JSON: [{"name":"Python","level":85},{"name":"EEE","level":90}]',
+      links:'JSON: [{"label":"GitHub","url":"https://github.com/dev-atikuzzaman","icon":"🐙"}]',
+      timeline:'JSON: [{"title":"BGFCL","year":"2024","desc":"Assistant Manager"}]',
+    };
+    document.getElementById('info-hint').textContent=hints[document.getElementById('info-type').value]||'';
+  }
+
+  // ─── EMBEDS ────────────────────────────────────────────────
+  function renderEmbeds() {
+    const c=document.getElementById('embeds-container'), e=document.getElementById('embeds-empty');
+    if(!embeds.length){c.innerHTML='';e.classList.remove('hidden');return;}
+    e.classList.add('hidden');
+    c.innerHTML=embeds.map(em=>{
+      const adm=isAdmin?`<button onclick="deleteItem('embed','${em.id}')" class="btn-outline text-xs" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">🗑 Delete</button>`:'';
+      let content='';
+      if(em.type==='gsheet'||em.type==='iframe') {
+        content=`<iframe src="${esc(em.url)}" class="embed-frame" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups" allowfullscreen></iframe>`;
+      } else if(em.type==='json') {
+        content=`<div id="json-${em.id}" class="glass-light p-4"><div class="skel h-4 mb-2 w-full"></div><div class="skel h-4 mb-2 w-3/4"></div><div class="skel h-4 w-1/2"></div></div>`;
+        setTimeout(()=>fetchJSON(em.id,em.url),120);
+      }
+      return `<div class="glass p-5"><div class="flex items-center justify-between mb-4 flex-wrap gap-2"><div class="flex items-center gap-2"><span>${em.type==='gsheet'?'📊':em.type==='json'?'⚡':'🌐'}</span><h3 class="font-bold text-white">${esc(em.title)}</h3></div>${adm}</div>${content}</div>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  async function fetchJSON(id,url) {
+    const el=document.getElementById('json-'+id); if(!el) return;
+    try {
+      const data=await (await fetch(url)).json();
+      if(Array.isArray(data)&&data.length) {
+        const keys=Object.keys(data[0]);
+        el.innerHTML=`<div class="overflow-x-auto"><table style="width:100%;border-collapse:collapse;font-size:.78rem;"><thead><tr>${keys.map(k=>`<th style="text-align:left;padding:.45rem .7rem;color:#4de8a0;border-bottom:1px solid rgba(60,180,120,.15);">${esc(k)}</th>`).join('')}</tr></thead><tbody>${data.slice(0,20).map(row=>`<tr>${keys.map(k=>`<td style="padding:.35rem .7rem;color:rgba(200,245,220,.8);border-bottom:1px solid rgba(60,180,120,.07);">${esc(String(row[k]??''))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      } else {
+        el.innerHTML=`<pre style="color:rgba(200,245,220,.8);font-size:.72rem;overflow:auto;max-height:280px;">${esc(JSON.stringify(data,null,2))}</pre>`;
+      }
+    } catch(err){
+      el.innerHTML=`<p style="color:#f87171;font-size:.83rem;">❌ Failed: ${esc(err.message)}</p>`;
+    }
+  }
+
+  function saveEmbed() {
+    const title=document.getElementById('embed-title').value.trim();
+    const type=document.getElementById('embed-type').value;
+    const url=document.getElementById('embed-url').value.trim();
+    if(!title||!url){toast('Title ও URL দিন!','#f97316');return;}
+    embeds.push({id:uid(),title,type,url,ts:Date.now()});
+    save('ah_embeds',embeds); closeModal('modal-new-embed');
+    ['embed-title','embed-url'].forEach(id=>document.getElementById(id).value='');
+    renderEmbeds(); toast('✅ Data source added!','#10b981');
+  }
+
+  function updateEmbedHint() {
+    const hints={
+      gsheet:'Google Sheet: File → Share → Publish to web → Embed → src URL paste করুন।',
+      iframe:'যেকোনো website যেটা iframe allow করে তার URL।',
+      json:'Public JSON API URL। CORS-enabled হতে হবে।',
+    };
+    document.getElementById('embed-hint').textContent=hints[document.getElementById('embed-type').value]||'';
+  }
+
+  // ─── ABOUT ─────────────────────────────────────────────────
+  function renderAbout() {
+    const skills=[
+      {name:'Python Programming',level:88},{name:'Web Dev (HTML/CSS/JS/React)',level:80},
+      {name:'Electrical Engineering',level:85},{name:'Gas Field Operations',level:75},
+      {name:'PWA Development',level:70},{name:'Public Procurement',level:72},
+    ];
+    document.getElementById('skills-list').innerHTML=skills.map(s=>`
+      <div>
+        <div class="flex justify-between text-sm mb-1" style="color:rgba(200,245,220,.8);">
+          <span>${s.name}</span><span>${s.level}%</span>
+        </div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:0%" data-target="${s.level}"></div></div>
+      </div>`).join('');
+
+    const timeline=[
+      {year:'2024–Present',title:'Assistant Manager, BGFCL',desc:'Bakhrabad Gas Field — Production Dept.'},
+      {year:'2024',title:'BIM Special Foundation Training',desc:'60-day, Dhaka — ~80 colleagues'},
+      {year:'2023',title:'B.Sc. EEE Completed',desc:'Electrical & Electronic Engineering'},
+      {year:'2022–23',title:'Python Tutorial Series',desc:'65+ Bengali tutorial videos'},
+      {year:'Earlier',title:'SSC/HSC Teaching',desc:'Baghatipara, Natore'},
+    ];
+    document.getElementById('timeline-list').innerHTML=timeline.map(t=>`
+      <div class="flex items-start gap-3">
+        <div class="timeline-dot flex-shrink-0 mt-1"></div>
+        <div>
+          <p class="font-semibold text-white text-sm">${t.title}</p>
+          <p class="text-xs mb-0.5" style="color:#fbbf24;">${t.year}</p>
+          <p class="text-xs" style="color:rgba(160,240,200,.58);">${t.desc}</p>
+        </div>
+      </div>`).join('');
+
+    setTimeout(()=>{
+      document.querySelectorAll('.skill-bar-fill').forEach(b=>{ b.style.width=b.dataset.target+'%'; });
+    },250);
+  }
+
+  // ─── DELETE ────────────────────────────────────────────────
+  function deleteItem(type,id){ deleteTarget=id; deleteType=type; openModal('modal-confirm-delete'); }
+  function confirmDelete(){
+    if(deleteType==='post')   { posts=posts.filter(x=>x.id!==deleteTarget);     save('ah_posts',posts);    renderPosts(); }
+    if(deleteType==='course') { courses=courses.filter(x=>x.id!==deleteTarget); save('ah_courses',courses); renderCourses(); }
+    if(deleteType==='info')   { infos=infos.filter(x=>x.id!==deleteTarget);     save('ah_infos',infos);    renderStatic(); }
+    if(deleteType==='embed')  { embeds=embeds.filter(x=>x.id!==deleteTarget);   save('ah_embeds',embeds);  renderEmbeds(); }
+    closeModal('modal-confirm-delete'); toast('🗑️ Deleted.','#6b7280');
+    deleteTarget=null; deleteType=null;
+  }
+
+  // ─── SAMPLE DATA ───────────────────────────────────────────
+  function getSamplePosts(){return[
+    {id:'p1',title:'সেন্টমার্টিনের পড়ন্ত বিকেল 🌊',
+     body:'পানির নীল রঙটা ঠিক এমন — যেন আকাশ আর সমুদ্র একসাথে মিলিয়ে গেছে। সূর্য যখন পশ্চিমে হেলে পড়ে, তখন পানির উপর সোনালি আলোর রেখা তৈরি হয় — মনে হয় এই মুহূর্তটা আর কখনো আসবে না।\n\nএই অনুভূতিটাই এই ওয়েবসাইটের ডিজাইনে রাখতে চেয়েছিলাম।',
+     category:'thought',ts:Date.now()-86400000*2,likes:7,liked:false},
+    {id:'p2',title:'Python দিয়ে Gas Field Automation',
+     body:'D-Nothi automation project এ Python + Selenium দিয়ে সরকারি ছুটির আবেদনের process automate করা হয়েছে।\n\n🔧 Stack: Python, Selenium, Flask\n📦 Deploy: Local intranet',
+     category:'tech',ts:Date.now()-86400000*5,likes:12,liked:false},
+    {id:'p3',title:'সূরা আল-ফাতিহার তাফসীর',
+     body:'«اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ» — "আমাদের সরল পথ দেখাও।"\n\nপ্রতিদিন ১৭ বার আমরা এই দোয়া পড়ি। সেই পথটা কেমন? নবীগণ, সিদ্দীকগণ, শহীদগণ ও সালেহীনগণের পথ।',
+     category:'islam',ts:Date.now()-86400000*8,likes:19,liked:false},
+  ];}
+  function getSampleCourses(){return[
+    {id:'c1',title:'Python Basics — বাংলায়',desc:'Variables, loops, functions সব বাংলায় শিখুন।',
+     source:'youtube',videoId:'rfscVS0vtbw',thumb:'',tag:'Python',duration:'4.5 hrs',ts:Date.now()},
+    {id:'c2',title:'Web Dev Full Course',desc:'HTML, CSS, JavaScript দিয়ে website বানানো।',
+     source:'youtube',videoId:'mU6anWqZJcc',thumb:'',tag:'Web Dev',duration:'6 hrs',ts:Date.now()},
+  ];}
+  function getSampleInfos(){return[
+    {id:'i1',title:'🔗 Important Links',type:'links',
+     content:JSON.stringify([
+       {label:'GitHub',url:'https://github.com/dev-atikuzzaman',icon:'🐙'},
+       {label:'BIM Hub',url:'#',icon:'📚'},{label:'Meal Calc',url:'#',icon:'🍽️'},
+     ]),ts:Date.now()},
+    {id:'i2',title:'📜 Education & Certifications',type:'timeline',
+     content:JSON.stringify([
+       {title:'B.Sc. in EEE',year:'2023',desc:'Electrical & Electronic Engineering'},
+       {title:'BIM Foundation Training',year:'2024',desc:'Bangladesh Institute of Management, Dhaka'},
+     ]),ts:Date.now()},
+    {id:'i3',title:'💡 About This Site',type:'text',
+     content:'GitHub Pages + localStorage — সম্পূর্ণ ফ্রি, লাইফটাইম।\n\nযেকেউ দেখতে পারবেন। শুধু Admin (Akib Hossain) নতুন content add করতে পারবেন।\n\n🌊 Theme: সেন্টমার্টিনের পড়ন্ত বিকেল + Deep Forest Green।',
+     ts:Date.now()},
+  ];}
+
+  // ─── INIT ──────────────────────────────────────────────────
+  function init() {
+    posts   = load('ah_posts')   || getSamplePosts();
+    courses = load('ah_courses') || getSampleCourses();
+    infos   = load('ah_infos')   || getSampleInfos();
+    embeds  = load('ah_embeds')  || [];
+    isAdmin = sessionStorage.getItem('ah_admin')==='1';
+
+    loadBgPhoto();
+    spawnParticles();
+    updateAdminUI();
+    renderPosts(); renderCourses(); renderStatic(); renderEmbeds(); renderAbout();
+    lucide.createIcons();
+  }
+
+  document.addEventListener('keydown', e=>{ if(e.ctrlKey&&e.shiftKey&&e.key==='A') toggleAdminModal(); });
+  window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

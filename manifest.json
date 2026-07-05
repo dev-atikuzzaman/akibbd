@@ -1,0 +1,45 @@
+{
+  "name": "Akib Hossain | Portfolio & Courses",
+  "short_name": "AH Portfolio",
+  "description": "Md. Akib Hossain — EEE Engineer · Gas Field · Python Developer",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#071510",
+  "theme_color": "#0d2a18",
+  "lang": "bn",
+  "dir": "ltr",
+  "categories": ["education", "portfolio", "productivity"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Notes",
+      "short_name": "Notes",
+      "description": "Read all notes",
+      "url": "./index.html#notes"
+    },
+    {
+      "name": "Courses",
+      "short_name": "Courses",
+      "description": "Browse courses",
+      "url": "./index.html#courses"
+    }
+  ],
+  "prefer_related_applications": false
+}

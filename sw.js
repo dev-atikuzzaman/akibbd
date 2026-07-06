@@ -1,5 +1,5 @@
-// ── Atikuzzaman Portfolio — Service Worker v2 ──────────────
-const CACHE = 'ah-portfolio-v2';
+// ── Atikuzzaman Portfolio — Service Worker v3 ──────────────
+const CACHE = 'ah-portfolio-v3';
 
 // Core files to pre-cache on install
 const PRECACHE = [

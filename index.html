@@ -23,6 +23,9 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -559,13 +562,14 @@
         <div id="admin-badge" class="hidden flex-shrink-0">
           <span class="text-xs font-semibold px-3 py-1 rounded-full" style="background:linear-gradient(135deg,rgba(26,127,168,.3),rgba(77,232,160,.2)); color:#4de8a0; border:1px solid rgba(77,232,160,.3);">Admin</span>
         </div>
+        <span id="sync-badge" class="hidden sm:inline text-xs flex-shrink-0" style="color:#fbbf24;">🟡 Connecting…</span>
       </div>
     </nav>
 
     <!-- HERO -->
     <header class="relative pt-16 pb-10 px-4 text-center">
       <div class="max-w-3xl mx-auto">
-        <p class="text-xs font-medium mb-3 tracking-widest uppercase" style="color:#4de8a0; letter-spacing:.22em; font-family:'Hind Siliguri',sans-serif;">সেন্টমার্টিন · নারিকেল জিঞ্জিরা · বঙ্গোপসাগর</p>
+        <p class="text-xs font-medium mb-3 tracking-widest uppercase" style="color:#4de8a0; letter-spacing:.22em; font-family:'Hind Siliguri',sans-serif;">জয়ন্তিপুর · বাগাতিপাড়া · নাটোর</p>
         <h1 class="hero-title mb-4">Md. Atikuzzaman</h1>
         <p class="text-base mb-2" style="color:rgba(180,245,210,.82); font-family:'Hind Siliguri',sans-serif;">EEE Engineer · Gas Field Professional · Python Developer</p>
         <p class="text-sm mb-7" style="color:rgba(120,200,160,.58); font-family:'Hind Siliguri',sans-serif;">Bakhrabad Gas Field, BGFCL | Petrobangla</p>
@@ -587,7 +591,7 @@
         <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
           <h2 class="sec-title">Notes & Thoughts</h2>
           <div id="notes-admin-btn" class="hidden">
-            <button class="btn-primary" onclick="openModal('modal-new-post')">
+            <button class="btn-primary" onclick="openNewPostModal()">
               <span class="flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> New Note</span>
             </button>
           </div>
@@ -611,7 +615,7 @@
         <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
           <h2 class="sec-title">Video Courses</h2>
           <div id="courses-admin-btn" class="hidden">
-            <button class="btn-primary" onclick="openModal('modal-new-course')">
+            <button class="btn-primary" onclick="openNewCourseModal()">
               <span class="flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add Course</span>
             </button>
           </div>
@@ -628,7 +632,7 @@
         <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
           <h2 class="sec-title">Info & Portfolio</h2>
           <div id="static-admin-btn" class="hidden">
-            <button class="btn-primary" onclick="openModal('modal-new-info')">
+            <button class="btn-primary" onclick="openNewInfoModal()">
               <span class="flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add Section</span>
             </button>
           </div>
@@ -641,7 +645,7 @@
         <div class="mb-5 flex items-center justify-between flex-wrap gap-3">
           <h2 class="sec-title">Live Data</h2>
           <div id="dynamic-admin-btn" class="hidden">
-            <button class="btn-primary" onclick="openModal('modal-new-embed')">
+            <button class="btn-primary" onclick="openNewEmbedModal()">
               <span class="flex items-center gap-2"><i data-lucide="link" class="w-4 h-4"></i> Add Source</span>
             </button>
           </div>
@@ -738,22 +742,64 @@
 
   <!-- ══ MODALS ═════════════════════════════════════════════ -->
 
-  <!-- Admin -->
+  <!-- Admin / Auth -->
   <div class="modal-overlay" id="modal-admin">
     <div class="modal-box">
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Admin Access</h3>
         <button onclick="closeModal('modal-admin')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
       </div>
-      <div id="admin-login-form">
-        <p class="text-sm mb-4" style="color:rgba(160,240,200,.65); font-family:'Hind Siliguri',sans-serif;">আপনার secret key দিন:</p>
-        <input id="admin-key-input" type="password" class="inp mb-4" placeholder="Secret Key..." />
-        <button class="btn-primary w-full" onclick="adminLogin()">Login</button>
-        <p class="text-xs mt-3 text-center" style="color:rgba(120,200,160,.4);">Owner-only access — key সেট করতে index.html এর ADMIN_SECRET_HASH দেখুন</p>
+
+      <!-- Logged OUT: sign in / sign up / forgot -->
+      <div id="auth-logged-out">
+        <div class="flex gap-2 mb-4">
+          <button class="btn-outline text-xs auth-tab act-filter" data-view="signin" onclick="setAuthView('signin')">Sign In</button>
+          <button class="btn-outline text-xs auth-tab" data-view="signup" onclick="setAuthView('signup')">Sign Up</button>
+          <button class="btn-outline text-xs auth-tab" data-view="forgot" onclick="setAuthView('forgot')">Forgot?</button>
+        </div>
+
+        <div id="view-signin" class="space-y-3">
+          <input id="signin-email" type="email" class="inp" placeholder="Email..." autocomplete="email" />
+          <input id="signin-password" type="password" class="inp" placeholder="Password..." autocomplete="current-password" />
+          <button class="btn-primary w-full" onclick="doSignIn()">Sign In</button>
+        </div>
+
+        <div id="view-signup" class="hidden space-y-3">
+          <p class="text-xs mb-1" style="color:rgba(160,240,200,.6);">নিজের admin account তৈরি করুন (একবারই দরকার)।</p>
+          <input id="signup-email" type="email" class="inp" placeholder="Email..." autocomplete="email" />
+          <input id="signup-password" type="password" class="inp" placeholder="Password (৮+ characters)..." autocomplete="new-password" />
+          <input id="signup-password-confirm" type="password" class="inp" placeholder="Confirm Password..." autocomplete="new-password" />
+          <button class="btn-primary w-full" onclick="doSignUp()">Sign Up</button>
+        </div>
+
+        <div id="view-forgot" class="hidden space-y-3">
+          <p class="text-xs mb-1" style="color:rgba(160,240,200,.6);">Email দিন — reset link পাঠানো হবে।</p>
+          <input id="forgot-email" type="email" class="inp" placeholder="Email..." autocomplete="email" />
+          <button class="btn-primary w-full" onclick="doForgotPassword()">Send Reset Link</button>
+        </div>
+
+        <p class="text-xs mt-4 text-center" style="color:rgba(120,200,160,.4);">🔒 Real Supabase Auth — RLS দিয়ে সুরক্ষিত।</p>
       </div>
-      <div id="admin-logout-panel" class="hidden">
-        <p class="text-sm mb-4" style="color:#4de8a0; font-family:'Hind Siliguri',sans-serif;">✅ Admin হিসেবে logged in।</p>
-        <button class="btn-outline w-full" onclick="adminLogout()">Logout</button>
+
+      <!-- Logged IN -->
+      <div id="auth-logged-in" class="hidden">
+        <p class="text-sm mb-1" style="color:#4de8a0;">✅ Logged in হিসেবে:</p>
+        <p class="text-sm mb-4 font-semibold" id="auth-user-email" style="color:#fff;"></p>
+        <button class="btn-outline w-full" onclick="doSignOut()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Set New Password (password-recovery landing) -->
+  <div class="modal-overlay" id="modal-set-password">
+    <div class="modal-box" style="max-width:420px;">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">নতুন Password সেট করুন</h3>
+      </div>
+      <div class="space-y-3">
+        <input id="recovery-password" type="password" class="inp" placeholder="New Password (৮+ characters)..." autocomplete="new-password" />
+        <input id="recovery-password-confirm" type="password" class="inp" placeholder="Confirm New Password..." autocomplete="new-password" />
+        <button class="btn-primary w-full" onclick="doSetNewPassword()">Update Password</button>
       </div>
     </div>
   </div>
@@ -762,7 +808,7 @@
   <div class="modal-overlay" id="modal-new-post">
     <div class="modal-box" style="max-width:560px;">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">New Note</h3>
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;" id="post-modal-title">New Note</h3>
         <button onclick="closeModal('modal-new-post')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
       </div>
       <div class="space-y-3">
@@ -773,6 +819,10 @@
           <option value="tech">💻 Tech</option>
           <option value="islam">🌙 Islam</option>
           <option value="gas">⚡ Gas Field</option>
+        </select>
+        <select id="post-visibility" class="inp">
+          <option value="public">🌐 সবার জন্য (All)</option>
+          <option value="private">🔒 শুধু আমার জন্য (Only Me)</option>
         </select>
         <div class="flex gap-3 pt-1">
           <button class="btn-primary flex-1" onclick="savePost()">Publish</button>
@@ -786,7 +836,7 @@
   <div class="modal-overlay" id="modal-new-course">
     <div class="modal-box" style="max-width:560px;">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Add Course</h3>
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;" id="course-modal-title">Add Course</h3>
         <button onclick="closeModal('modal-new-course')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
       </div>
       <div class="space-y-3">
@@ -803,6 +853,10 @@
           <input id="course-tag" type="text" class="inp" placeholder="Tag (Python, EEE...)" />
           <input id="course-duration" type="text" class="inp" placeholder="Duration (45 min)" />
         </div>
+        <select id="course-visibility" class="inp">
+          <option value="public">🌐 সবার জন্য (All)</option>
+          <option value="private">🔒 শুধু আমার জন্য (Only Me)</option>
+        </select>
         <div class="flex gap-3 pt-1">
           <button class="btn-primary flex-1" onclick="saveCourse()">Add</button>
           <button class="btn-outline flex-1" onclick="closeModal('modal-new-course')">Cancel</button>
@@ -815,7 +869,7 @@
   <div class="modal-overlay" id="modal-new-info">
     <div class="modal-box" style="max-width:560px;">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Add Info Section</h3>
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;" id="info-modal-title">Add Info Section</h3>
         <button onclick="closeModal('modal-new-info')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
       </div>
       <div class="space-y-3">
@@ -828,6 +882,10 @@
         </select>
         <textarea id="info-content" class="inp" rows="5" placeholder="Content..."></textarea>
         <p id="info-hint" class="text-xs" style="color:rgba(120,200,160,.4);">Plain text or Markdown.</p>
+        <select id="info-visibility" class="inp">
+          <option value="public">🌐 সবার জন্য (All)</option>
+          <option value="private">🔒 শুধু আমার জন্য (Only Me)</option>
+        </select>
         <div class="flex gap-3 pt-1">
           <button class="btn-primary flex-1" onclick="saveInfo()">Add</button>
           <button class="btn-outline flex-1" onclick="closeModal('modal-new-info')">Cancel</button>
@@ -840,7 +898,7 @@
   <div class="modal-overlay" id="modal-new-embed">
     <div class="modal-box" style="max-width:560px;">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;">Add Data Source</h3>
+        <h3 class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif;" id="embed-modal-title">Add Data Source</h3>
         <button onclick="closeModal('modal-new-embed')" style="color:rgba(120,200,160,.5);" class="hover:text-white text-xl">✕</button>
       </div>
       <div class="space-y-3">
@@ -852,6 +910,10 @@
         </select>
         <input id="embed-url" type="text" class="inp" placeholder="URL..." />
         <p id="embed-hint" class="text-xs" style="color:rgba(120,200,160,.4);">Google Sheet: File → Share → Publish to web → Embed → src URL।</p>
+        <select id="embed-visibility" class="inp">
+          <option value="public">🌐 সবার জন্য (All)</option>
+          <option value="private">🔒 শুধু আমার জন্য (Only Me)</option>
+        </select>
         <div class="flex gap-3 pt-1">
           <button class="btn-primary flex-1" onclick="saveEmbed()">Add</button>
           <button class="btn-outline flex-1" onclick="closeModal('modal-new-embed')">Cancel</button>
@@ -878,24 +940,16 @@
 
   <!-- ══ JAVASCRIPT ═════════════════════════════════════════ -->
   <script>
-  // ─── CONFIG ────────────────────────────────────────────────
-  // 🔑 Admin key is stored as a SHA-256 hash, not plaintext, so it isn't
-  // sitting in the page source in the clear. NOTE: since this app has no
-  // backend server, "admin" only ever controls what's saved in *that one
-  // visitor's own browser* (localStorage) — it is not a real shared login,
-  // just a way to hide the edit buttons from casual visitors.
-  //
-  // Default key is: "atik-secure-2026"  — CHANGE THIS before deploying!
-  // To make a new key: open devtools console anywhere and run
-  //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourNewKey'))
-  //     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
-  // then paste the printed hash below.
-  const ADMIN_SECRET_HASH = 'e898e5d5a6a1e32c5b768a2bc63a8013d3b64bbd1e0be477b2c338e1e1ee1449';
-  let adminAttempts = 0, adminLockUntil = 0;
-  async function sha256Hex(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  }
+  // ─── SUPABASE CONFIG ───────────────────────────────────────
+  // Anon/public key — safe to expose in client code by design (Supabase
+  // protects data via Row Level Security policies, not by hiding this key).
+  const SUPABASE_URL = 'https://spvmhipozacxsczlzpuy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwdm1oaXBvemFjeHNjemx6cHV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyNTY5ODgsImV4cCI6MjA5ODgzMjk4OH0.zsOjlrFRuSbNU_287zrM2Ha_NYfWrmEkScM7uaFRDQo';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+  let currentUser = null; // real Supabase auth user, replaces old fake admin flag
+  let authView = 'signin'; // which form is showing inside the admin modal
 
   // Free Pexels photos — tropical beach, coconut palms, golden sunset, blue sea
   // (Saint Martin / Bay of Bengal atmosphere)
@@ -918,10 +972,73 @@
   let isAdmin=false, posts=[], courses=[], infos=[], embeds=[];
   let deleteTarget=null, deleteType=null, activeFilter='all';
   let deferredInstall=null;
+  let editTarget={type:null,id:null}; // set when Editing an existing item
+  const likedLocal = load('ah_liked') || {}; // which posts THIS browser already liked (cosmetic only)
 
-  // ─── STORAGE ───────────────────────────────────────────────
-  const save=(k,d)=>{ try{localStorage.setItem(k,JSON.stringify(d))}catch(e){} };
-  const load=(k)=>{ try{const d=localStorage.getItem(k);return d?JSON.parse(d):null}catch(e){return null} };
+  // ─── LOCAL PREF STORAGE (small UI-only prefs, NOT app content) ─────
+  function save(k,d){ try{localStorage.setItem(k,JSON.stringify(d))}catch(e){} }
+  function load(k){ try{const d=localStorage.getItem(k);return d?JSON.parse(d):null}catch(e){return null} }
+
+  // ─── SUPABASE DATA LAYER ────────────────────────────────────
+  // All real content (posts/courses/infos/embeds) now lives in Supabase
+  // Postgres tables, protected by Row Level Security, and kept in sync
+  // live across every open tab/device via Supabase Realtime.
+  const TABLES = ['posts','courses','infos','embeds'];
+
+  async function fetchAll() {
+    const [p,c,i,e] = await Promise.all([
+      sb.from('posts').select('*').order('created_at',{ascending:false}),
+      sb.from('courses').select('*').order('created_at',{ascending:false}),
+      sb.from('infos').select('*').order('created_at',{ascending:true}),
+      sb.from('embeds').select('*').order('created_at',{ascending:false}),
+    ]);
+    if(p.error) console.error('posts fetch',p.error);
+    if(c.error) console.error('courses fetch',c.error);
+    if(i.error) console.error('infos fetch',i.error);
+    if(e.error) console.error('embeds fetch',e.error);
+    posts   = p.data||[];
+    courses = c.data||[];
+    infos   = i.data||[];
+    embeds  = e.data||[];
+    renderPosts(); renderCourses(); renderStatic(); renderEmbeds();
+  }
+
+  function upsertLocal(list, row) {
+    const i = list.findIndex(x=>x.id===row.id);
+    if(i>-1) list[i]=row; else list.unshift(row);
+  }
+  function removeLocal(list, id) {
+    const i = list.findIndex(x=>x.id===id);
+    if(i>-1) list.splice(i,1);
+  }
+
+  let realtimeChannel = null;
+  function subscribeRealtime() {
+    if(realtimeChannel) sb.removeChannel(realtimeChannel);
+    realtimeChannel = sb.channel('public:content-sync');
+    TABLES.forEach(table=>{
+      realtimeChannel.on('postgres_changes', {event:'*', schema:'public', table}, payload=>{
+        const map = {posts, courses, infos, embeds};
+        const list = map[table];
+        if(payload.eventType==='DELETE') removeLocal(list, payload.old.id);
+        else upsertLocal(list, payload.new);
+        if(table==='posts') renderPosts();
+        if(table==='courses') renderCourses();
+        if(table==='infos') renderStatic();
+        if(table==='embeds') renderEmbeds();
+        setSyncBadge(true);
+      });
+    });
+    realtimeChannel.subscribe(status=>{
+      setSyncBadge(status==='SUBSCRIBED');
+    });
+  }
+
+  function setSyncBadge(live) {
+    const el=document.getElementById('sync-badge'); if(!el) return;
+    el.textContent = live ? '🟢 Live' : '🟡 Connecting…';
+    el.style.color = live ? '#4de8a0' : '#fbbf24';
+  }
 
   // ─── BACKGROUND PHOTO LOADER ───────────────────────────────
   function loadBgPhoto() {
@@ -995,38 +1112,88 @@
     }
   }
 
-  // ─── ADMIN ─────────────────────────────────────────────────
+  // ─── ADMIN / AUTH ────────────────────────────────────────────
   function toggleAdminModal() {
-    const loggedIn = isAdmin;
-    document.getElementById('admin-login-form').classList.toggle('hidden', loggedIn);
-    document.getElementById('admin-logout-panel').classList.toggle('hidden', !loggedIn);
+    renderAuthPanel();
     openModal('modal-admin');
   }
-  async function adminLogin() {
-    if (Date.now() < adminLockUntil) {
-      const secsLeft = Math.ceil((adminLockUntil-Date.now())/1000);
-      toast(`⏳ Too many tries. Wait ${secsLeft}s.`,'#ef4444');
+
+  function setAuthView(view) {
+    authView = view;
+    renderAuthPanel();
+  }
+
+  function renderAuthPanel() {
+    const loggedIn = !!currentUser;
+    document.getElementById('auth-logged-out').classList.toggle('hidden', loggedIn);
+    document.getElementById('auth-logged-in').classList.toggle('hidden', !loggedIn);
+    if (loggedIn) {
+      document.getElementById('auth-user-email').textContent = currentUser.email;
       return;
     }
-    const val = document.getElementById('admin-key-input').value.trim();
-    const hash = await sha256Hex(val);
-    if (hash === ADMIN_SECRET_HASH) {
-      isAdmin=true; adminAttempts=0; sessionStorage.setItem('ah_admin','1');
-      updateAdminUI(); closeModal('modal-admin');
-      toast('✅ Admin logged in!','#10b981');
-    } else {
-      adminAttempts++;
-      if (adminAttempts >= 5) { adminLockUntil = Date.now()+30000; adminAttempts=0; }
-      toast('❌ Wrong key!','#ef4444');
-      document.getElementById('admin-key-input').value='';
-    }
+    ['view-signin','view-signup','view-forgot'].forEach(id=>{
+      document.getElementById(id).classList.toggle('hidden', id!==`view-${authView}`);
+    });
+    document.querySelectorAll('.auth-tab').forEach(b=>{
+      b.classList.toggle('act-filter', b.dataset.view===authView);
+    });
   }
-  function adminLogout() {
-    isAdmin=false; sessionStorage.removeItem('ah_admin');
-    updateAdminUI(); closeModal('modal-admin');
+
+  async function doSignIn() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+    if (!email || !password) { toast('Email ও Password দিন!','#f97316'); return; }
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    toast('✅ Signed in!','#10b981'); closeModal('modal-admin');
+  }
+
+  async function doSignUp() {
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const confirm = document.getElementById('signup-password-confirm').value;
+    if (!email || !password) { toast('Email ও Password দিন!','#f97316'); return; }
+    if (password.length < 8) { toast('Password কমপক্ষে ৮ অক্ষরের হতে হবে।','#f97316'); return; }
+    if (password !== confirm) { toast('❌ Password মিলছে না!','#ef4444'); return; }
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    toast('✅ Confirmation email পাঠানো হয়েছে — inbox চেক করুন!','#10b981');
+    setAuthView('signin');
+  }
+
+  async function doForgotPassword() {
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) { toast('Email দিন!','#f97316'); return; }
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    toast('✅ Reset link পাঠানো হয়েছে — inbox চেক করুন!','#10b981');
+    setAuthView('signin');
+  }
+
+  async function doSignOut() {
+    await sb.auth.signOut();
+    closeModal('modal-admin');
     toast('Logged out.','#6b7280');
   }
+
+  async function doSetNewPassword() {
+    const p1 = document.getElementById('recovery-password').value;
+    const p2 = document.getElementById('recovery-password-confirm').value;
+    if (p1.length < 8) { toast('Password কমপক্ষে ৮ অক্ষরের হতে হবে।','#f97316'); return; }
+    if (p1 !== p2) { toast('❌ Password মিলছে না!','#ef4444'); return; }
+    const { error } = await sb.auth.updateUser({ password: p1 });
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    toast('✅ Password পরিবর্তন হয়েছে!','#10b981');
+    closeModal('modal-set-password');
+  }
+
   function updateAdminUI() {
+    isAdmin = !!currentUser;
     document.getElementById('admin-badge').classList.toggle('hidden',!isAdmin);
     ['notes-admin-btn','courses-admin-btn','static-admin-btn','dynamic-admin-btn'].forEach(id=>{
       const el=document.getElementById(id); if(el) el.classList.toggle('hidden',!isAdmin);
@@ -1038,6 +1205,17 @@
     lucide.createIcons();
     renderPosts(); renderCourses(); renderStatic(); renderEmbeds();
   }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    currentUser = session?.user || null;
+    updateAdminUI();
+    if (event === 'PASSWORD_RECOVERY') {
+      openModal('modal-set-password');
+    }
+    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+      fetchAll(); // re-fetch so private/public visibility reflects the new identity
+    }
+  });
 
   // ─── TABS ──────────────────────────────────────────────────
   function switchTab(name) {
@@ -1063,13 +1241,13 @@
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'),3000);
   }
-  function fmtDate(ts) {
-    return new Date(ts).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
+  function fmtDate(iso) {
+    return new Date(iso).toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
   }
   const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   // Only allow http/https URLs to be used as href/src — blocks javascript: and data: URI injection
   const safeUrl=u=>{ try{ const p=new URL(String(u), location.href); return ['http:','https:'].includes(p.protocol) ? p.href : '#'; }catch(e){ return '#'; } };
+  const visBadge=v=>v==='private'?`<span class="tag" style="font-size:.6rem;color:#fbbf24;border-color:rgba(251,191,36,.3);">🔒 Only Me</span>`:'';
 
   // ─── POSTS ─────────────────────────────────────────────────
   const catInfo={
@@ -1084,24 +1262,29 @@
     const filtered=activeFilter==='all'?posts:posts.filter(p=>p.category===activeFilter);
     if(!filtered.length){ c.innerHTML=''; e.classList.remove('hidden'); return; }
     e.classList.add('hidden');
+    const mine = p => isAdmin && currentUser && p.owner_id===currentUser.id;
     c.innerHTML=filtered.map(p=>{
       const cat=catInfo[p.category]||catInfo.thought;
-      const adm=isAdmin?`<button onclick="deleteItem('post','${p.id}')" class="react-btn" style="color:rgba(248,113,113,.7)"><i data-lucide="trash-2" class="w-3 h-3"></i> Delete</button>`:'';
+      const liked = !!likedLocal[p.id];
+      const adm = mine(p) ? `
+        <button onclick="openEditPost('${p.id}')" class="react-btn"><i data-lucide="pencil" class="w-3 h-3"></i> Edit</button>
+        <button onclick="deleteItem('post','${p.id}')" class="react-btn" style="color:rgba(248,113,113,.7)"><i data-lucide="trash-2" class="w-3 h-3"></i> Delete</button>` : '';
       return `<article class="post-card p-5">
         <div class="flex items-start gap-3 mb-3">
           <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0" style="background:${cat.color};border:1px solid ${cat.border};">${cat.icon}</div>
           <div class="flex-1 min-w-0">
             ${p.title?`<h3 class="font-bold text-white mb-0.5" style="font-size:1rem;">${esc(p.title)}</h3>`:''}
             <div class="flex items-center gap-2 text-xs flex-wrap" style="color:rgba(120,200,160,.5);">
-              <span>Atikuzzaman</span><span>·</span><span>${fmtDate(p.ts)}</span>
+              <span>Atikuzzaman</span><span>·</span><span>${fmtDate(p.created_at)}</span>
               <span class="tag" style="font-size:.62rem;">${cat.label}</span>
+              ${visBadge(p.visibility)}
             </div>
           </div>
         </div>
         <div class="text-sm leading-7 mb-4" style="color:rgba(200,245,220,.82); font-family:'Hind Siliguri',sans-serif; white-space:pre-wrap;">${esc(p.body)}</div>
         <div class="flex items-center gap-2 flex-wrap pt-2 border-t" style="border-color:rgba(60,180,120,.1);">
-          <button class="react-btn ${p.liked?'liked':''}" onclick="toggleLike('${p.id}')">
-            ♥ ${p.liked?'Liked':'Like'} ${p.likes||0}
+          <button class="react-btn ${liked?'liked':''}" onclick="toggleLike('${p.id}')">
+            ♥ ${liked?'Liked':'Like'} ${p.likes||0}
           </button>
           ${adm}
         </div>
@@ -1110,16 +1293,43 @@
     lucide.createIcons();
   }
 
-  function savePost() {
-    const title=document.getElementById('post-title').value.trim();
-    const body=document.getElementById('post-body').value.trim();
-    const cat=document.getElementById('post-category').value;
-    if(!body){toast('কিছু লিখুন!','#f97316');return;}
-    posts.unshift({id:uid(),title,body,category:cat,ts:Date.now(),likes:0,liked:false});
-    save('ah_posts',posts); closeModal('modal-new-post');
+  function openNewPostModal() {
+    editTarget={type:null,id:null};
+    document.getElementById('post-modal-title').textContent='New Note';
     document.getElementById('post-title').value='';
     document.getElementById('post-body').value='';
-    renderPosts(); toast('✅ Published!','#10b981');
+    document.getElementById('post-category').value='thought';
+    document.getElementById('post-visibility').value='public';
+    openModal('modal-new-post');
+  }
+  function openEditPost(id) {
+    const p=posts.find(x=>x.id===id); if(!p) return;
+    editTarget={type:'post',id};
+    document.getElementById('post-modal-title').textContent='Edit Note';
+    document.getElementById('post-title').value=p.title||'';
+    document.getElementById('post-body').value=p.body||'';
+    document.getElementById('post-category').value=p.category||'thought';
+    document.getElementById('post-visibility').value=p.visibility||'public';
+    openModal('modal-new-post');
+  }
+
+  async function savePost() {
+    if (!currentUser) { toast('❌ প্রথমে Sign In করুন!','#ef4444'); return; }
+    const title=document.getElementById('post-title').value.trim();
+    const body=document.getElementById('post-body').value.trim();
+    const category=document.getElementById('post-category').value;
+    const visibility=document.getElementById('post-visibility').value;
+    if(!body){toast('কিছু লিখুন!','#f97316');return;}
+    let error;
+    if (editTarget.type==='post') {
+      ({ error } = await sb.from('posts').update({title,body,category,visibility}).eq('id',editTarget.id));
+    } else {
+      ({ error } = await sb.from('posts').insert({title,body,category,visibility,owner_id:currentUser.id}));
+    }
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    closeModal('modal-new-post');
+    toast(editTarget.type==='post' ? '✅ Updated!' : '✅ Published!','#10b981');
+    editTarget={type:null,id:null};
   }
 
   function filterPosts(cat,btn) {
@@ -1129,10 +1339,16 @@
     renderPosts();
   }
 
-  function toggleLike(id) {
+  async function toggleLike(id) {
     const p=posts.find(x=>x.id===id); if(!p) return;
-    p.liked=!p.liked; p.likes=(p.likes||0)+(p.liked?1:-1);
-    save('ah_posts',posts); renderPosts();
+    const liked = !!likedLocal[id];
+    const { error } = await sb.rpc('adjust_post_like', { p_id:id, p_delta: liked ? -1 : 1 });
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    likedLocal[id] = !liked;
+    save('ah_liked', likedLocal);
+    // optimistic local bump; the realtime broadcast will reconcile the exact count
+    p.likes = Math.max(0, (p.likes||0) + (liked?-1:1));
+    renderPosts();
   }
 
   // ─── COURSES ───────────────────────────────────────────────
@@ -1151,9 +1367,12 @@
     const c=document.getElementById('courses-container'), e=document.getElementById('courses-empty');
     if(!courses.length){ c.innerHTML=''; e.classList.remove('hidden'); return; }
     e.classList.add('hidden');
+    const mine = cv => isAdmin && currentUser && cv.owner_id===currentUser.id;
     c.innerHTML=courses.map(cv=>{
-      const thumb=getThumb(cv.source,cv.videoId,cv.thumb);
-      const adm=isAdmin?`<button onclick="deleteItem('course','${cv.id}')" class="absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs" style="background:rgba(0,0,0,.55);">✕</button>`:'';
+      const thumb=getThumb(cv.source,cv.video_id,cv.thumb);
+      const adm = mine(cv) ? `
+        <button onclick="event.stopPropagation();openEditCourse('${cv.id}')" class="absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center text-white hover:bg-ocean-500 transition-all text-xs" style="background:rgba(0,0,0,.55);">✎</button>
+        <button onclick="event.stopPropagation();deleteItem('course','${cv.id}')" class="absolute top-2 left-11 w-7 h-7 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs" style="background:rgba(0,0,0,.55);">✕</button>` : '';
       return `<div class="video-card cursor-pointer" onclick="playCourse('${cv.id}')">
         <div class="relative aspect-video bg-gray-900">
           ${thumb?`<img src="${esc(safeUrl(thumb))}" alt="${esc(cv.title)}" class="w-full h-full object-cover opacity-80"/>`:`<div class="w-full h-full flex items-center justify-center text-4xl">🎬</div>`}
@@ -1167,11 +1386,12 @@
         </div>
         <div class="p-4">
           <h4 class="font-bold text-white mb-1" style="font-size:.93rem;">${esc(cv.title)}</h4>
-          <p class="text-xs mb-3" style="color:rgba(120,200,160,.6); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(cv.desc||'')}</p>
+          <p class="text-xs mb-3" style="color:rgba(120,200,160,.6); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(cv.description||'')}</p>
           <div class="flex items-center justify-between">
             <span class="tag text-xs">${esc(cv.tag||'Course')}</span>
             ${cv.duration?`<span class="text-xs" style="color:rgba(120,200,160,.5);">⏱ ${esc(cv.duration)}</span>`:''}
           </div>
+          <div class="mt-1">${visBadge(cv.visibility)}</div>
         </div>
       </div>`;
     }).join('');
@@ -1180,7 +1400,7 @@
 
   function playCourse(id) {
     const cv=courses.find(x=>x.id===id); if(!cv) return;
-    const url=getEmbedUrl(cv.source,cv.videoId);
+    const url=getEmbedUrl(cv.source,cv.video_id);
     const ex=document.getElementById('video-lightbox');
     if(ex) ex.remove();
     const lb=document.createElement('div');
@@ -1194,33 +1414,68 @@
       <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:.85rem;border:1px solid rgba(60,180,120,.2);">
         <iframe src="${esc(safeUrl(url))}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture"></iframe>
       </div>
-      ${cv.desc?`<p style="color:rgba(160,240,200,.65);margin-top:.65rem;font-size:.83rem;">${esc(cv.desc)}</p>`:''}
+      ${cv.description?`<p style="color:rgba(160,240,200,.65);margin-top:.65rem;font-size:.83rem;">${esc(cv.description)}</p>`:''}
     </div>`;
     lb.addEventListener('click',e=>{ if(e.target===lb) lb.remove(); });
     document.body.appendChild(lb);
   }
 
-  function saveCourse() {
+  function openNewCourseModal() {
+    editTarget={type:null,id:null};
+    document.getElementById('course-modal-title').textContent='Add Course';
+    ['course-title','course-desc','course-video-id','course-thumb','course-tag','course-duration'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('course-source').value='youtube';
+    document.getElementById('course-visibility').value='public';
+    openModal('modal-new-course');
+  }
+  function openEditCourse(id) {
+    const cv=courses.find(x=>x.id===id); if(!cv) return;
+    editTarget={type:'course',id};
+    document.getElementById('course-modal-title').textContent='Edit Course';
+    document.getElementById('course-title').value=cv.title||'';
+    document.getElementById('course-desc').value=cv.description||'';
+    document.getElementById('course-source').value=cv.source||'youtube';
+    document.getElementById('course-video-id').value=cv.video_id||'';
+    document.getElementById('course-thumb').value=cv.thumb||'';
+    document.getElementById('course-tag').value=cv.tag||'';
+    document.getElementById('course-duration').value=cv.duration||'';
+    document.getElementById('course-visibility').value=cv.visibility||'public';
+    openModal('modal-new-course');
+  }
+
+  async function saveCourse() {
+    if (!currentUser) { toast('❌ প্রথমে Sign In করুন!','#ef4444'); return; }
     const title=document.getElementById('course-title').value.trim();
-    const desc=document.getElementById('course-desc').value.trim();
+    const description=document.getElementById('course-desc').value.trim();
     const source=document.getElementById('course-source').value;
-    const videoId=document.getElementById('course-video-id').value.trim();
+    const video_id=document.getElementById('course-video-id').value.trim();
     const thumb=document.getElementById('course-thumb').value.trim();
     const tag=document.getElementById('course-tag').value.trim();
     const duration=document.getElementById('course-duration').value.trim();
-    if(!title||!videoId){toast('Title ও Video ID দিন!','#f97316');return;}
-    courses.unshift({id:uid(),title,desc,source,videoId,thumb,tag,duration,ts:Date.now()});
-    save('ah_courses',courses); closeModal('modal-new-course');
-    ['course-title','course-desc','course-video-id','course-thumb','course-tag','course-duration'].forEach(id=>document.getElementById(id).value='');
-    renderCourses(); toast('✅ Course added!','#10b981');
+    const visibility=document.getElementById('course-visibility').value;
+    if(!title||!video_id){toast('Title ও Video ID দিন!','#f97316');return;}
+    let error;
+    const row={title,description,source,video_id,thumb,tag,duration,visibility};
+    if (editTarget.type==='course') {
+      ({ error } = await sb.from('courses').update(row).eq('id',editTarget.id));
+    } else {
+      ({ error } = await sb.from('courses').insert({...row, owner_id:currentUser.id}));
+    }
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    closeModal('modal-new-course');
+    toast(editTarget.type==='course' ? '✅ Updated!' : '✅ Course added!','#10b981');
+    editTarget={type:null,id:null};
   }
 
   // ─── STATIC INFO ───────────────────────────────────────────
   function renderStatic() {
     const c=document.getElementById('static-container');
     if(!infos.length){c.innerHTML='<p class="text-center py-16" style="color:rgba(120,200,160,.4);">কোনো তথ্য নেই।</p>';return;}
+    const mine = info => isAdmin && currentUser && info.owner_id===currentUser.id;
     c.innerHTML=infos.map(info=>{
-      const adm=isAdmin?`<button onclick="deleteItem('info','${info.id}')" class="btn-outline text-xs" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">🗑 Delete</button>`:'';
+      const adm = mine(info) ? `
+        <button onclick="openEditInfo('${info.id}')" class="btn-outline text-xs">✏️ Edit</button>
+        <button onclick="deleteItem('info','${info.id}')" class="btn-outline text-xs" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">🗑 Delete</button>` : '';
       let body='';
       if(info.type==='text') {
         body=`<div class="text-sm leading-7" style="color:rgba(200,245,220,.8);white-space:pre-wrap;font-family:'Hind Siliguri',sans-serif;">${esc(info.content)}</div>`;
@@ -1240,20 +1495,50 @@
           body=`<div class="relative pl-10"><div class="timeline-line"></div><div class="space-y-5">${tl.map(it=>`<div class="flex items-start gap-3"><div class="timeline-dot flex-shrink-0 mt-1"></div><div><p class="font-semibold text-white text-sm">${esc(it.title)}</p><p class="text-xs" style="color:#fbbf24;">${esc(it.year||'')}</p>${it.desc?`<p class="text-xs mt-0.5" style="color:rgba(160,240,200,.6);">${esc(it.desc)}</p>`:''}</div></div>`).join('')}</div></div>`;
         } catch{ body='<p class="text-sm text-red-400">Invalid JSON</p>'; }
       }
-      return `<div class="glass p-5"><div class="flex items-center justify-between mb-4 flex-wrap gap-2"><h3 class="font-bold text-white" style="font-size:1rem;">${esc(info.title)}</h3>${adm}</div>${body}</div>`;
+      return `<div class="glass p-5"><div class="flex items-center justify-between mb-4 flex-wrap gap-2"><h3 class="font-bold text-white" style="font-size:1rem;">${esc(info.title)} ${visBadge(info.visibility)}</h3><div class="flex gap-2">${adm}</div></div>${body}</div>`;
     }).join('');
     lucide.createIcons();
   }
 
-  function saveInfo() {
+  function openNewInfoModal() {
+    editTarget={type:null,id:null};
+    document.getElementById('info-modal-title').textContent='Add Info Section';
+    document.getElementById('info-title').value='';
+    document.getElementById('info-type').value='text';
+    document.getElementById('info-content').value='';
+    document.getElementById('info-visibility').value='public';
+    toggleInfoType();
+    openModal('modal-new-info');
+  }
+  function openEditInfo(id) {
+    const info=infos.find(x=>x.id===id); if(!info) return;
+    editTarget={type:'info',id};
+    document.getElementById('info-modal-title').textContent='Edit Info Section';
+    document.getElementById('info-title').value=info.title||'';
+    document.getElementById('info-type').value=info.type||'text';
+    document.getElementById('info-content').value=info.content||'';
+    document.getElementById('info-visibility').value=info.visibility||'public';
+    toggleInfoType();
+    openModal('modal-new-info');
+  }
+
+  async function saveInfo() {
+    if (!currentUser) { toast('❌ প্রথমে Sign In করুন!','#ef4444'); return; }
     const title=document.getElementById('info-title').value.trim();
     const type=document.getElementById('info-type').value;
     const content=document.getElementById('info-content').value.trim();
+    const visibility=document.getElementById('info-visibility').value;
     if(!title||!content){toast('Title ও Content দিন!','#f97316');return;}
-    infos.push({id:uid(),title,type,content,ts:Date.now()});
-    save('ah_infos',infos); closeModal('modal-new-info');
-    ['info-title','info-content'].forEach(id=>document.getElementById(id).value='');
-    renderStatic(); toast('✅ Section added!','#10b981');
+    let error;
+    if (editTarget.type==='info') {
+      ({ error } = await sb.from('infos').update({title,type,content,visibility}).eq('id',editTarget.id));
+    } else {
+      ({ error } = await sb.from('infos').insert({title,type,content,visibility,owner_id:currentUser.id}));
+    }
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    closeModal('modal-new-info');
+    toast(editTarget.type==='info' ? '✅ Updated!' : '✅ Section added!','#10b981');
+    editTarget={type:null,id:null};
   }
 
   function toggleInfoType() {
@@ -1271,8 +1556,11 @@
     const c=document.getElementById('embeds-container'), e=document.getElementById('embeds-empty');
     if(!embeds.length){c.innerHTML='';e.classList.remove('hidden');return;}
     e.classList.add('hidden');
+    const mine = em => isAdmin && currentUser && em.owner_id===currentUser.id;
     c.innerHTML=embeds.map(em=>{
-      const adm=isAdmin?`<button onclick="deleteItem('embed','${em.id}')" class="btn-outline text-xs" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">🗑 Delete</button>`:'';
+      const adm = mine(em) ? `
+        <button onclick="openEditEmbed('${em.id}')" class="btn-outline text-xs">✏️ Edit</button>
+        <button onclick="deleteItem('embed','${em.id}')" class="btn-outline text-xs" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">🗑 Delete</button>` : '';
       let content='';
       if(em.type==='gsheet'||em.type==='iframe') {
         content=`<iframe src="${esc(safeUrl(em.url))}" class="embed-frame" loading="lazy" sandbox="allow-scripts allow-popups" allowfullscreen></iframe>`;
@@ -1280,7 +1568,7 @@
         content=`<div id="json-${em.id}" class="glass-light p-4"><div class="skel h-4 mb-2 w-full"></div><div class="skel h-4 mb-2 w-3/4"></div><div class="skel h-4 w-1/2"></div></div>`;
         setTimeout(()=>fetchJSON(em.id,em.url),120);
       }
-      return `<div class="glass p-5"><div class="flex items-center justify-between mb-4 flex-wrap gap-2"><div class="flex items-center gap-2"><span>${em.type==='gsheet'?'📊':em.type==='json'?'⚡':'🌐'}</span><h3 class="font-bold text-white">${esc(em.title)}</h3></div>${adm}</div>${content}</div>`;
+      return `<div class="glass p-5"><div class="flex items-center justify-between mb-4 flex-wrap gap-2"><div class="flex items-center gap-2"><span>${em.type==='gsheet'?'📊':em.type==='json'?'⚡':'🌐'}</span><h3 class="font-bold text-white">${esc(em.title)}</h3>${visBadge(em.visibility)}</div><div class="flex gap-2">${adm}</div></div>${content}</div>`;
     }).join('');
     lucide.createIcons();
   }
@@ -1300,15 +1588,45 @@
     }
   }
 
-  function saveEmbed() {
+  function openNewEmbedModal() {
+    editTarget={type:null,id:null};
+    document.getElementById('embed-modal-title').textContent='Add Data Source';
+    document.getElementById('embed-title').value='';
+    document.getElementById('embed-type').value='gsheet';
+    document.getElementById('embed-url').value='';
+    document.getElementById('embed-visibility').value='public';
+    updateEmbedHint();
+    openModal('modal-new-embed');
+  }
+  function openEditEmbed(id) {
+    const em=embeds.find(x=>x.id===id); if(!em) return;
+    editTarget={type:'embed',id};
+    document.getElementById('embed-modal-title').textContent='Edit Data Source';
+    document.getElementById('embed-title').value=em.title||'';
+    document.getElementById('embed-type').value=em.type||'gsheet';
+    document.getElementById('embed-url').value=em.url||'';
+    document.getElementById('embed-visibility').value=em.visibility||'public';
+    updateEmbedHint();
+    openModal('modal-new-embed');
+  }
+
+  async function saveEmbed() {
+    if (!currentUser) { toast('❌ প্রথমে Sign In করুন!','#ef4444'); return; }
     const title=document.getElementById('embed-title').value.trim();
     const type=document.getElementById('embed-type').value;
     const url=document.getElementById('embed-url').value.trim();
+    const visibility=document.getElementById('embed-visibility').value;
     if(!title||!url){toast('Title ও URL দিন!','#f97316');return;}
-    embeds.push({id:uid(),title,type,url,ts:Date.now()});
-    save('ah_embeds',embeds); closeModal('modal-new-embed');
-    ['embed-title','embed-url'].forEach(id=>document.getElementById(id).value='');
-    renderEmbeds(); toast('✅ Data source added!','#10b981');
+    let error;
+    if (editTarget.type==='embed') {
+      ({ error } = await sb.from('embeds').update({title,type,url,visibility}).eq('id',editTarget.id));
+    } else {
+      ({ error } = await sb.from('embeds').insert({title,type,url,visibility,owner_id:currentUser.id}));
+    }
+    if (error) { toast('❌ '+error.message,'#ef4444'); return; }
+    closeModal('modal-new-embed');
+    toast(editTarget.type==='embed' ? '✅ Updated!' : '✅ Data source added!','#10b981');
+    editTarget={type:null,id:null};
   }
 
   function updateEmbedHint() {
@@ -1359,62 +1677,30 @@
 
   // ─── DELETE ────────────────────────────────────────────────
   function deleteItem(type,id){ deleteTarget=id; deleteType=type; openModal('modal-confirm-delete'); }
-  function confirmDelete(){
-    if(deleteType==='post')   { posts=posts.filter(x=>x.id!==deleteTarget);     save('ah_posts',posts);    renderPosts(); }
-    if(deleteType==='course') { courses=courses.filter(x=>x.id!==deleteTarget); save('ah_courses',courses); renderCourses(); }
-    if(deleteType==='info')   { infos=infos.filter(x=>x.id!==deleteTarget);     save('ah_infos',infos);    renderStatic(); }
-    if(deleteType==='embed')  { embeds=embeds.filter(x=>x.id!==deleteTarget);   save('ah_embeds',embeds);  renderEmbeds(); }
+  async function confirmDelete(){
+    const tableMap={post:'posts',course:'courses',info:'infos',embed:'embeds'};
+    const table=tableMap[deleteType];
+    if(table){
+      const { error } = await sb.from(table).delete().eq('id',deleteTarget);
+      if (error) { toast('❌ '+error.message,'#ef4444'); closeModal('modal-confirm-delete'); return; }
+    }
     closeModal('modal-confirm-delete'); toast('🗑️ Deleted.','#6b7280');
     deleteTarget=null; deleteType=null;
   }
 
-  // ─── SAMPLE DATA ───────────────────────────────────────────
-  function getSamplePosts(){return[
-    {id:'p1',title:'সেন্টমার্টিনের পড়ন্ত বিকেল 🌊',
-     body:'পানির নীল রঙটা ঠিক এমন — যেন আকাশ আর সমুদ্র একসাথে মিলিয়ে গেছে। সূর্য যখন পশ্চিমে হেলে পড়ে, তখন পানির উপর সোনালি আলোর রেখা তৈরি হয় — মনে হয় এই মুহূর্তটা আর কখনো আসবে না।\n\nএই অনুভূতিটাই এই ওয়েবসাইটের ডিজাইনে রাখতে চেয়েছিলাম।',
-     category:'thought',ts:Date.now()-86400000*2,likes:7,liked:false},
-    {id:'p2',title:'Python দিয়ে Gas Field Automation',
-     body:'D-Nothi automation project এ Python + Selenium দিয়ে সরকারি ছুটির আবেদনের process automate করা হয়েছে।\n\n🔧 Stack: Python, Selenium, Flask\n📦 Deploy: Local intranet',
-     category:'tech',ts:Date.now()-86400000*5,likes:12,liked:false},
-    {id:'p3',title:'সূরা আল-ফাতিহার তাফসীর',
-     body:'«اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ» — "আমাদের সরল পথ দেখাও।"\n\nপ্রতিদিন ১৭ বার আমরা এই দোয়া পড়ি। সেই পথটা কেমন? নবীগণ, সিদ্দীকগণ, শহীদগণ ও সালেহীনগণের পথ।',
-     category:'islam',ts:Date.now()-86400000*8,likes:19,liked:false},
-  ];}
-  function getSampleCourses(){return[
-    {id:'c1',title:'Python Basics — বাংলায়',desc:'Variables, loops, functions সব বাংলায় শিখুন।',
-     source:'youtube',videoId:'rfscVS0vtbw',thumb:'',tag:'Python',duration:'4.5 hrs',ts:Date.now()},
-    {id:'c2',title:'Web Dev Full Course',desc:'HTML, CSS, JavaScript দিয়ে website বানানো।',
-     source:'youtube',videoId:'mU6anWqZJcc',thumb:'',tag:'Web Dev',duration:'6 hrs',ts:Date.now()},
-  ];}
-  function getSampleInfos(){return[
-    {id:'i1',title:'🔗 Important Links',type:'links',
-     content:JSON.stringify([
-       {label:'GitHub',url:'https://github.com/dev-atikuzzaman',icon:'🐙'},
-       {label:'BIM Hub',url:'#',icon:'📚'},{label:'Meal Calc',url:'#',icon:'🍽️'},
-     ]),ts:Date.now()},
-    {id:'i2',title:'📜 Education & Certifications',type:'timeline',
-     content:JSON.stringify([
-       {title:'B.Sc. in EEE',year:'2023',desc:'Electrical & Electronic Engineering'},
-       {title:'BIM Foundation Training',year:'2024',desc:'Bangladesh Institute of Management, Dhaka'},
-     ]),ts:Date.now()},
-    {id:'i3',title:'💡 About This Site',type:'text',
-     content:'GitHub Pages + localStorage — সম্পূর্ণ ফ্রি, লাইফটাইম।\n\nযেকেউ দেখতে পারবেন। শুধু Admin (Atikuzzaman) নতুন content add করতে পারবেন।\n\n🌊 Theme: সেন্টমার্টিনের পড়ন্ত বিকেল + Deep Forest Green।',
-     ts:Date.now()},
-  ];}
-
   // ─── INIT ──────────────────────────────────────────────────
-  function init() {
-    posts   = load('ah_posts')   || getSamplePosts();
-    courses = load('ah_courses') || getSampleCourses();
-    infos   = load('ah_infos')   || getSampleInfos();
-    embeds  = load('ah_embeds')  || [];
-    isAdmin = sessionStorage.getItem('ah_admin')==='1';
-
+  async function init() {
     loadBgPhoto();
     spawnParticles();
-    updateAdminUI();
-    renderPosts(); renderCourses(); renderStatic(); renderEmbeds(); renderAbout();
+    renderAbout();
     lucide.createIcons();
+
+    const { data:{ session } } = await sb.auth.getSession();
+    currentUser = session?.user || null;
+    updateAdminUI();
+
+    await fetchAll();
+    subscribeRealtime();
   }
 
   document.addEventListener('keydown', e=>{ if(e.ctrlKey&&e.shiftKey&&e.key==='A') toggleAdminModal(); });
